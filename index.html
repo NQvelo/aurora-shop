@@ -21,7 +21,32 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <!-- Luxury Loading State -->
+    <div id="initial-loader" style="position: fixed; inset: 0; background: #faf8f7; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.8s ease-in-out;">
+      <div style="text-align: center;">
+        <img src="/logo.png" alt="Aurora" style="height: 60px; opacity: 0; transform: translateY(10px); animation: logoReveal 1.2s ease-out forwards;" />
+        <div style="margin-top: 20px; font-family: 'Inter', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3em; color: #444; opacity: 0; animation: fadeIn 2s ease-in 0.5s forwards;">
+          Defining Luxury
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @keyframes logoReveal {
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeIn {
+        to { opacity: 1; }
+      }
+    </style>
+
+    <!-- Global Noise Texture Overlay -->
+    <div class="noise-overlay"></div>
+
+    <div id="main-wrapper">
+      <div id="root"></div>
+    </div>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
