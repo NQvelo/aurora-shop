@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(async ({ mode }) => ({
+  // Required for GitHub Pages: site is served at https://<user>.github.io/<repo>/
+  base: process.env.PUBLIC_PATH || "/",
 
   server: {
     host: "::",
@@ -13,7 +14,13 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(),
+    // Only load lovable-tagger in dev to avoid CI/build issues (optional deps, etc.)
+    ...(mode === "development"
+      ? [(await import("lovable-tagger")).componentTagger()]
+      : []),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

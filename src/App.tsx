@@ -21,30 +21,42 @@ const App = () => (
     <AuthProvider>
       <ShopProvider>
         <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/sale" element={<CategoryPage category="sale" />} />
-            <Route path="/new" element={<CategoryPage category="new" />} />
-            <Route path="/clothing" element={<CategoryPage category="clothing" />} />
-            <Route path="/bestsellers" element={<CategoryPage category="bestsellers" />} />
-            <Route path="/collections" element={<CategoryPage category="collections" />} />
-            <Route path="/collections/:collection" element={<CategoryPage category="collections" />} />
-            <Route path="/stockists" element={<AboutPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/product/:id" element={<ProductPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/admin/orders" element={<AdminPage />} />
-            <Route path="/admin/products" element={<AdminPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/sale" element={<CategoryPage category="sale" />} />
+              <Route path="/new" element={<CategoryPage category="new" />} />
+              <Route
+                path="/clothing"
+                element={<CategoryPage category="clothing" />}
+              />
+              <Route
+                path="/bestsellers"
+                element={<CategoryPage category="bestsellers" />}
+              />
+              <Route
+                path="/collections"
+                element={<CategoryPage category="collections" />}
+              />
+              <Route
+                path="/collections/:collection"
+                element={<CategoryPage category="collections" />}
+              />
+              <Route path="/stockists" element={<AboutPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/product/:id" element={<ProductPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/admin/orders" element={<AdminPage />} />
+              <Route path="/admin/products" element={<AdminPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
       </ShopProvider>
     </AuthProvider>
   </QueryClientProvider>
