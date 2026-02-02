@@ -2,8 +2,6 @@
   "name": "aurora-shop",
   "version": "0.0.0",
   "description": "",
-  "author": "Tekla",
-  "private": true,
   "type": "module",
   "homepage": "https://nqvelo.github.io/aurora-shop/",
   "repository": {
