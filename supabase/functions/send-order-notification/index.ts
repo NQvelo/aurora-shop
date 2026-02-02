@@ -54,8 +54,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        // IMPORTANT: Replace 'aurora.ge' with your actual verified domain from Resend.com
-        from: 'Aurora <orders@aurora.ge>',
+        from: 'Aurora <onboarding@resend.dev>',
         to: [to],
         subject: subject,
         html: html,
