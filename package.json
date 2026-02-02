@@ -1,8 +1,15 @@
 {
-  "name": "vite_react_shadcn_ts",
-  "private": true,
+  "name": "aurora-shop",
   "version": "0.0.0",
+  "description": "",
+  "author": "Tekla",
+  "private": true,
   "type": "module",
+  "homepage": "https://nqvelo.github.io/aurora-shop/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NQvelo/aurora-shop.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
