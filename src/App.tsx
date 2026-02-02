@@ -23,7 +23,7 @@ const App = () => (
         <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter basename="/aurorashop">
+        <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/sale" element={<CategoryPage category="sale" />} />
