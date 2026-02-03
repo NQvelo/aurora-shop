@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useShop } from "@/context/ShopContext";
 import { useAuth } from "@/context/AuthContext";
 import { useLocale } from "@/hooks/useLocale";
+import logoImg from "@/assets/logo.png";
 
 const Header = () => {
   const { t } = useTranslation();
@@ -42,9 +43,9 @@ const Header = () => {
         className="absolute left-1/2 transform -translate-x-1/2 lg:static lg:transform-none lg:ml-[var(--nav-width)]"
       >
         <img
-          src={`${import.meta.env.BASE_URL}logo.png`}
+          src={logoImg}
           alt="Aurora by Tekla"
-          className="h-14 md:h-17 w-auto object-contain"
+          className="h-16 md:h-[4.25rem] w-auto object-contain"
         />
       </Link>
 
