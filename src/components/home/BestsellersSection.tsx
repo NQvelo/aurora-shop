@@ -1,12 +1,13 @@
-import { Link } from 'react-router-dom';
-import { Heart } from 'lucide-react';
-import { useProducts } from '@/hooks/useProducts';
-import { useShop } from '@/context/ShopContext';
+import { Link } from "react-router-dom";
+import { Heart } from "lucide-react";
+import { useProducts } from "@/hooks/useProducts";
+import { useShop } from "@/context/ShopContext";
 
 const BestsellersSection = () => {
-  const { currency, addToWishlist, removeFromWishlist, isInWishlist } = useShop();
+  const { currency, addToWishlist, removeFromWishlist, isInWishlist } =
+    useShop();
   const { data: allProducts, isLoading } = useProducts();
-  
+
   const bestsellers = (allProducts || [])
     .filter((p) => p.isBestseller)
     .slice(0, 4);
@@ -50,7 +51,7 @@ const BestsellersSection = () => {
                   alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                
+
                 {/* Wishlist button */}
                 <button
                   onClick={(e) => {
@@ -66,7 +67,7 @@ const BestsellersSection = () => {
                 >
                   <Heart
                     className={`w-4 h-4 ${
-                      isInWishlist(product.id) ? 'fill-current' : ''
+                      isInWishlist(product.id) ? "fill-current" : ""
                     }`}
                   />
                 </button>

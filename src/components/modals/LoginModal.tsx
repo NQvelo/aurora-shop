@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { X } from 'lucide-react';
-import { useShop } from '@/context/ShopContext';
-import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
+import { useShop } from "@/context/ShopContext";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 const LoginModal = () => {
   const { isLoginOpen, setIsLoginOpen } = useShop();
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
 
   if (!isLoginOpen) return null;
@@ -19,28 +19,29 @@ const LoginModal = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       if (isLogin) {
-        const { data: authData, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        const { data: authData, error } =
+          await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
         if (error) throw error;
-        
+
         // Check if user is admin
         if (authData.user) {
           const { data: profileData } = await supabase
-            .from('profiles')
-            .select('is_admin')
-            .eq('id', authData.user.id)
+            .from("profiles")
+            .select("is_admin")
+            .eq("id", authData.user.id)
             .single();
-          
+
           if (profileData?.is_admin) {
-            toast.success('Admin access granted');
-            navigate('/admin/orders');
+            toast.success("Admin access granted");
+            navigate("/admin/orders");
           } else {
-            toast.success('Successfully signed in');
+            toast.success("Successfully signed in");
           }
         }
       } else {
@@ -54,11 +55,11 @@ const LoginModal = () => {
           },
         });
         if (error) throw error;
-        toast.success('Registration successful. Please check your email.');
+        toast.success("Registration successful. Please check your email.");
       }
       setIsLoginOpen(false);
     } catch (error: any) {
-      toast.error(error.message || 'Authentication failed');
+      toast.error(error.message || "Authentication failed");
     } finally {
       setLoading(false);
     }
@@ -84,12 +85,12 @@ const LoginModal = () => {
           </button>
 
           <h2 className="font-display text-2xl mb-2 lowercase italic">
-            {isLogin ? 'Sign In' : 'Create Account'}
+            {isLogin ? "Sign in" : "Create Account"}
           </h2>
           <p className="text-sm text-muted-foreground mb-8">
             {isLogin
-              ? 'Welcome back to Aurora'
-              : 'Join us for exclusive offers and updates'}
+              ? "Welcome back to Aurora"
+              : "Join us for exclusive offers and updates"}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -145,23 +146,27 @@ const LoginModal = () => {
               </div>
             )}
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn-luxury-primary w-full mt-6"
               disabled={loading}
             >
-              {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
+              {loading
+                ? "Processing..."
+                : isLogin
+                ? "Sign in"
+                : "Create Account"}
             </button>
           </form>
 
           <div className="mt-8 text-center border-t border-border pt-6">
             <p className="text-sm text-muted-foreground">
-              {isLogin ? "Don't have an account?" : 'Already have an account?'}
+              {isLogin ? "Don't have an account?" : "Already have an account?"}
               <button
                 onClick={() => setIsLogin(!isLogin)}
                 className="ml-2 underline hover:text-foreground transition-colors"
               >
-                {isLogin ? 'Create one' : 'Sign in'}
+                {isLogin ? "Create one" : "Sign in"}
               </button>
             </p>
           </div>

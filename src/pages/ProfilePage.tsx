@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  User as UserIcon,
   LogOut,
   Package,
   Heart,
@@ -11,6 +10,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { useShop } from "@/context/ShopContext";
@@ -44,8 +44,11 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const [orderHistory, setOrderHistory] = useState<ProfileOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
-  const [showOrderHistory, setShowOrderHistory] = useState(false);
+  const [activeSection, setActiveSection] = useState<
+    "saved" | "orders" | "account"
+  >("saved");
   const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
+  const [accountName, setAccountName] = useState<string>("");
 
   const toggleOrder = (id: string) => {
     setExpandedOrders((prev) => {
@@ -58,6 +61,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!user?.id || !user?.email) return;
+    setAccountName(user.user_metadata?.full_name || "");
     const fetchOrders = async () => {
       setOrdersLoading(true);
       const { data, error } = await supabase
@@ -84,6 +88,18 @@ const ProfilePage = () => {
     }
   };
 
+  const handleAccountSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await supabase.auth.updateUser({
+        data: { full_name: accountName },
+      });
+      toast.success("Account details updated");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update account");
+    }
+  };
+
   return (
     <Layout>
       <div className="min-h-screen bg-background pt-12">
@@ -97,31 +113,36 @@ const ProfilePage = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-            {/* Sidebar - Profile Info */}
+            {/* Sidebar - Profile Info / Navigation */}
             <div className="lg:col-span-1 space-y-8">
               <div className="bg-muted/30 p-8 border border-border">
-                <div className="flex flex-col items-center text-center mb-6">
-                  <div className="w-20 h-20 bg-muted flex items-center justify-center rounded-full mb-4">
-                    <UserIcon className="w-8 h-8 text-muted-foreground" />
-                  </div>
+                <div className="flex flex-col mb-6">
                   <h2 className="font-display text-xl mb-1">
                     {user.user_metadata?.full_name || "Valued Member"}
                   </h2>
-                  <p className="text-xs text-muted-foreground lowecase">
+                  <p className="text-xs text-muted-foreground lowercase">
                     {user.email}
                   </p>
                 </div>
 
                 <div className="space-y-1">
-                  <button className="w-full flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-widest text-foreground bg-white border border-border hover:bg-muted transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection("account")}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-widest transition-colors ${
+                      activeSection === "account"
+                        ? "text-foreground bg-muted border border-border"
+                        : "text-foreground bg-white border border-border hover:bg-muted"
+                    }`}
+                  >
                     <Settings className="w-4 h-4" />
                     Account Settings
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowOrderHistory(false)}
+                    onClick={() => setActiveSection("saved")}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-widest transition-colors ${
-                      !showOrderHistory
+                      activeSection === "saved"
                         ? "text-foreground bg-muted border border-border"
                         : "text-foreground bg-white border border-border hover:bg-muted"
                     }`}
@@ -131,15 +152,15 @@ const ProfilePage = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowOrderHistory(true)}
+                    onClick={() => setActiveSection("orders")}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-widest transition-colors ${
-                      showOrderHistory
+                      activeSection === "orders"
                         ? "text-foreground bg-muted border border-border"
                         : "text-foreground bg-white border border-border hover:bg-muted"
                     }`}
                   >
                     <Package className="w-4 h-4" />
-                    Order History
+                    Purchases
                   </button>
                   <button
                     onClick={handleSignOut}
@@ -166,9 +187,9 @@ const ProfilePage = () => {
               </div>
             </div>
 
-            {/* Main Content - Saved Items (hidden when Order History is shown) */}
+            {/* Main Content */}
             <div className="lg:col-span-3">
-              {!showOrderHistory && (
+              {activeSection === "saved" && (
                 <>
                   <div className="flex items-center justify-between mb-8">
                     <h2 className="font-display text-2xl flex items-center gap-3">
@@ -208,13 +229,13 @@ const ProfilePage = () => {
                 </>
               )}
 
-              {/* Order History - shown only when user clicks Order History button; expandable items like admin */}
-              {showOrderHistory && (
+              {/* Order History - expandable items */}
+              {activeSection === "orders" && (
                 <>
                   <div className="flex items-center justify-between mb-8">
                     <h2 className="font-display text-2xl flex items-center gap-3">
                       <Package className="w-6 h-6" />
-                      Order History
+                      Purchases
                     </h2>
                     <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
                       {orderHistory.length}{" "}
@@ -408,11 +429,61 @@ const ProfilePage = () => {
                       <Package className="w-12 h-12 text-muted/50 mb-4" />
                       <p className="text-muted-foreground text-sm font-light">
                         No orders yet. When you place an order and it’s marked
-                        delivered by us, it will appear here.
+                        delivered, it will appear here.
                       </p>
                     </div>
                   )}
                 </>
+              )}
+
+              {/* Account Settings */}
+              {activeSection === "account" && (
+                <section aria-label="Account settings" className="space-y-6">
+                  <div className="mb-4">
+                    <h2 className="font-display text-2xl">Account Settings</h2>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Update your personal details used for orders and
+                      communication.
+                    </p>
+                  </div>
+                  <form
+                    onSubmit={handleAccountSave}
+                    className="space-y-6 max-w-md"
+                  >
+                    <div>
+                      <label className="form-label text-[11px] uppercase tracking-[0.15em] text-muted-foreground block mb-2">
+                        Full name
+                      </label>
+                      <input
+                        type="text"
+                        value={accountName}
+                        onChange={(e) => setAccountName(e.target.value)}
+                        className="form-input w-full px-4 py-3 border border-border bg-transparent text-sm focus:outline-none focus:border-foreground transition-colors"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label text-[11px] uppercase tracking-[0.15em] text-muted-foreground block mb-2">
+                        Email address
+                      </label>
+                      <input
+                        type="email"
+                        value={user.email ?? ""}
+                        disabled
+                        className="form-input w-full px-4 py-3 border border-border bg-muted/40 text-sm text-muted-foreground cursor-not-allowed"
+                      />
+                      <p className="mt-2 text-[11px] text-muted-foreground">
+                        Email changes are not available from this page.
+                      </p>
+                    </div>
+                    <button
+                      type="submit"
+                      className="btn-luxury-primary px-8 py-3 text-[11px] uppercase tracking-[0.15em]"
+                    >
+                      Save changes
+                    </button>
+                  </form>
+                </section>
               )}
             </div>
           </div>

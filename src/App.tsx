@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import CheckoutPage from "./pages/CheckoutPage";
 import AdminPage from "./pages/AdminPage";
 import ScrollToTop from "./components/ScrollToTop";
+import CollectionsPage from "./pages/CollectionsPage";
 
 const queryClient = new QueryClient();
 
@@ -38,9 +39,26 @@ const App = () => (
                 path="/bestsellers"
                 element={<CategoryPage category="bestsellers" />}
               />
+              <Route path="/collections" element={<CollectionsPage />} />
               <Route
-                path="/collections"
-                element={<CategoryPage category="collections" />}
+                path="/collections/dresses"
+                element={<CategoryPage category="dresses" />}
+              />
+              <Route
+                path="/collections/makeup"
+                element={<CategoryPage category="makeup" />}
+              />
+              <Route
+                path="/collections/jewelry"
+                element={<CategoryPage category="jewelry" />}
+              />
+              <Route
+                path="/collections/best-friend"
+                element={<CategoryPage category="best-friend" />}
+              />
+              <Route
+                path="/collections/girlfriend"
+                element={<CategoryPage category="girlfriend" />}
               />
               <Route
                 path="/collections/:collection"
