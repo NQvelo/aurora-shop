@@ -4,6 +4,7 @@ import path from "path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
+const pkg = require("./package.json");
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -13,9 +14,17 @@ export default defineConfig(({ mode }) => {
       ? [require("lovable-tagger").componentTagger()]
       : [];
 
+  // GitHub Pages base: CI sets PUBLIC_PATH; else use homepage path for production
+  const baseFromHomepage =
+    pkg.homepage && typeof pkg.homepage === "string"
+      ? new URL(pkg.homepage).pathname
+      : "/";
+  const base =
+    process.env.PUBLIC_PATH ||
+    (mode === "production" ? baseFromHomepage : "/");
+
   return {
-    // Required for GitHub Pages: site is served at https://<user>.github.io/<repo>/
-    base: process.env.PUBLIC_PATH || "/",
+    base,
 
     server: {
       host: "::",
