@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import Layout from "@/components/layout/Layout";
@@ -13,6 +13,7 @@ import {
   Save,
   ChevronDown,
   ChevronUp,
+  Search,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types/product";
@@ -28,6 +29,7 @@ interface OrderItem {
 
 interface Order {
   id: string;
+  order_number?: string | null;
   customer_name: string;
   customer_email: string;
   customer_phone: string;
@@ -125,6 +127,7 @@ const AdminPage = () => {
 
   // Orders State
   const [orders, setOrders] = useState<Order[]>([]);
+  const [orderSearchQuery, setOrderSearchQuery] = useState("");
   const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
   const [orderEditDraft, setOrderEditDraft] = useState<
     Record<string, { status: string; arriving_date: string }>
@@ -140,6 +143,19 @@ const AdminPage = () => {
     }
     setExpandedOrders(next);
   };
+
+  const filteredOrders = useMemo(() => {
+    const q = orderSearchQuery.trim().toLowerCase();
+    if (!q) return orders;
+    return orders.filter(
+      (order) =>
+        (order.order_number ?? order.id).toLowerCase().includes(q) ||
+        order.customer_name?.toLowerCase().includes(q) ||
+        order.customer_email?.toLowerCase().includes(q) ||
+        order.customer_phone?.toLowerCase().includes(q) ||
+        order.id.toLowerCase().includes(q)
+    );
+  }, [orders, orderSearchQuery]);
 
   // Products State
   const [products, setProducts] = useState<Product[]>([]);
@@ -176,6 +192,7 @@ const AdminPage = () => {
     isBestseller: false,
     onSale: false,
     salePrice: 0,
+    hasSizes: true,
   });
 
   const normalizeSizes = (sizes: any) => {
@@ -290,14 +307,15 @@ const AdminPage = () => {
 
     if (!error && data) {
       setProducts(
-        data.map((p: any) => ({
+        data.map((p: Record<string, unknown>) => ({
           ...p,
           isNew: p.is_new,
           isBestseller: p.is_bestseller,
           onSale: p.on_sale,
           salePrice: p.sale_price,
+          hasSizes: p.has_sizes !== false,
           sizes: normalizeSizes(p.sizes),
-        }))
+        })) as Product[]
       );
     }
   };
@@ -518,6 +536,7 @@ const AdminPage = () => {
       is_bestseller: productForm.isBestseller,
       on_sale: productForm.onSale,
       sale_price: productForm.salePrice,
+      has_sizes: productForm.hasSizes !== false,
     };
 
     try {
@@ -551,6 +570,7 @@ const AdminPage = () => {
         isBestseller: false,
         onSale: false,
         salePrice: 0,
+        hasSizes: true,
       });
     } catch (error: any) {
       toast.error(error.message);
@@ -599,7 +619,17 @@ const AdminPage = () => {
 
           {activeTab === "orders" ? (
             <div className="space-y-4">
-              {orders.map((order) => {
+              <div className="relative max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search by Order ID, customer name, email, phone..."
+                  value={orderSearchQuery}
+                  onChange={(e) => setOrderSearchQuery(e.target.value)}
+                  className="w-full bg-background border border-border py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-foreground placeholder:text-muted-foreground"
+                />
+              </div>
+              {filteredOrders.map((order) => {
                 const isExpanded = expandedOrders.has(order.id);
                 return (
                   <div
@@ -627,7 +657,7 @@ const AdminPage = () => {
                             Order ID
                           </p>
                           <p className="text-xs font-mono font-medium">
-                            {order.id.slice(0, 8)}...
+                            {order.order_number ?? order.id}
                           </p>
                         </div>
                         <div className="space-y-1">
@@ -927,10 +957,12 @@ const AdminPage = () => {
                   </div>
                 );
               })}
-              {orders.length === 0 && (
+              {filteredOrders.length === 0 && (
                 <div className="text-center py-24 border border-dashed border-border">
                   <p className="text-luxury-caps text-muted-foreground">
-                    No orders found.
+                    {orderSearchQuery.trim()
+                      ? "No orders match your search."
+                      : "No orders found."}
                   </p>
                 </div>
               )}
@@ -1191,35 +1223,57 @@ const AdminPage = () => {
                         />
                       </div>
 
-                      <div className="pt-4">
-                        <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-4">
-                          Available Sizes
+                      <div className="pt-2">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={productForm.hasSizes !== false}
+                            onChange={(e) =>
+                              setProductForm({
+                                ...productForm,
+                                hasSizes: e.target.checked,
+                              })
+                            }
+                            className="w-3 h-3 border-border rounded-none"
+                          />
+                          <span className="text-[10px] uppercase tracking-widest">
+                            Has sizes
+                          </span>
                         </label>
-                        <div className="flex flex-wrap gap-2">
-                          {DEFAULT_SIZES.map((size) => {
-                            const sizesArray = Array.isArray(productForm.sizes)
-                              ? productForm.sizes
-                              : [];
-                            const isAvailable = sizesArray.find(
-                              (s: any) => s.label === size
-                            )?.available;
-                            return (
-                              <button
-                                key={size}
-                                type="button"
-                                onClick={() => handleSizeToggle(size)}
-                                className={`px-4 py-2 text-[10px] border transition-all ${
-                                  isAvailable
-                                    ? "border-foreground bg-foreground text-background"
-                                    : "border-border text-muted-foreground hover:border-foreground"
-                                }`}
-                              >
-                                {size}
-                              </button>
-                            );
-                          })}
-                        </div>
                       </div>
+
+                      {productForm.hasSizes !== false && (
+                        <div className="pt-4">
+                          <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-4">
+                            Available Sizes
+                          </label>
+                          <div className="flex flex-wrap gap-2">
+                            {DEFAULT_SIZES.map((size) => {
+                              const sizesArray = Array.isArray(productForm.sizes)
+                                ? productForm.sizes
+                                : [];
+                              const isAvailable = sizesArray.find(
+                                (s: { label: string; available: boolean }) =>
+                                  s.label === size
+                              )?.available;
+                              return (
+                                <button
+                                  key={size}
+                                  type="button"
+                                  onClick={() => handleSizeToggle(size)}
+                                  className={`px-4 py-2 text-[10px] border transition-all ${
+                                    isAvailable
+                                      ? "border-foreground bg-foreground text-background"
+                                      : "border-border text-muted-foreground hover:border-foreground"
+                                  }`}
+                                >
+                                  {size}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
                       <div className="pt-8">
                         <button

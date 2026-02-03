@@ -59,6 +59,16 @@ const ThankYouPage = () => {
                 <h2 className="text-[11px] uppercase tracking-[0.15em] mb-6 font-normal text-center">
                   Order summary
                 </h2>
+                {state.orderId && (
+                  <div className="mb-6">
+                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                      Order ID
+                    </p>
+                    <p className="text-xs font-mono font-medium break-all">
+                      {state.orderId}
+                    </p>
+                  </div>
+                )}
                 <ul className="space-y-4 mb-6">
                   {state.items.map((item, i) => (
                     <li

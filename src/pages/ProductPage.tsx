@@ -59,11 +59,15 @@ const ProductPage = () => {
   };
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
-      alert("Please select a size");
-      return;
+    if (product.hasSizes !== false) {
+      if (!selectedSize) {
+        alert("Please select a size");
+        return;
+      }
+      addToCart(product, selectedSize);
+    } else {
+      addToCart(product, "One Size");
     }
-    addToCart(product, selectedSize);
   };
 
   const toggleSection = (section: string) => {
@@ -214,35 +218,38 @@ const ProductPage = () => {
             )}
 
             {/* Size Selection */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[11px] uppercase tracking-[0.15em]">
-                  Select Size
-                </span>
-                <button className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground hover:text-foreground underline transition-colors">
-                  Size Guide
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size.label}
-                    onClick={() =>
-                      size.available && setSelectedSize(size.label)
-                    }
-                    disabled={!size.available}
-                    className={`size-btn ${
-                      selectedSize === size.label ? "size-btn-selected" : ""
-                    } ${!size.available ? "size-btn-disabled" : ""}`}
-                  >
-                    {size.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {product.hasSizes !== false && product.sizes?.length > 0 ? (
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[11px] uppercase tracking-[0.15em]">
+                      Select Size
+                    </span>
+                    <button className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground hover:text-foreground underline transition-colors">
+                      Size Guide
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {product.sizes.map((size) => (
+                      <button
+                        key={size.label}
+                        onClick={() =>
+                          size.available && setSelectedSize(size.label)
+                        }
+                        disabled={!size.available}
+                        className={`size-btn ${
+                          selectedSize === size.label ? "size-btn-selected" : ""
+                        } ${!size.available ? "size-btn-disabled" : ""}`}
+                      >
+                        {size.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null
+            }
 
             {/* Actions */}
-            <div className="flex gap-3 mb-8">
+            <div className="flex gap-3 mb-8 mt-6">
               <button
                 onClick={handleAddToCart}
                 className="btn-luxury-primary flex-1"

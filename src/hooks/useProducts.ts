@@ -15,12 +15,13 @@ export const useProducts = () => {
       
       // Map database fields to Product type if necessary
       // e.g., is_new -> isNew
-      return data.map((item: any) => ({
+      return data.map((item: Record<string, unknown>) => ({
         ...item,
         isNew: item.is_new,
         isBestseller: item.is_bestseller,
         onSale: item.on_sale,
         salePrice: item.sale_price,
+        hasSizes: item.has_sizes !== false,
       })) as Product[];
     },
   });
@@ -44,6 +45,7 @@ export const useProduct = (id: string) => {
         isBestseller: data.is_bestseller,
         onSale: data.on_sale,
         salePrice: data.sale_price,
+        hasSizes: data.has_sizes !== false,
       } as Product;
     },
     enabled: !!id,

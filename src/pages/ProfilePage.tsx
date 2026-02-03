@@ -30,6 +30,7 @@ interface OrderItem {
 
 interface ProfileOrder {
   id: string;
+  order_number?: string | null;
   customer_name: string;
   customer_email: string;
   customer_phone: string;
@@ -448,7 +449,7 @@ const ProfilePage = () => {
                                     Order ID
                                   </p>
                                   <p className="text-xs font-mono font-medium">
-                                    {order.id.slice(0, 8)}...
+                                    {order.order_number ?? order.id}
                                   </p>
                                 </div>
                                 <div className="space-y-1">

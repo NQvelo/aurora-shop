@@ -13,6 +13,8 @@ export interface Product {
   isBestseller?: boolean;
   onSale?: boolean;
   salePrice?: number;
+  /** If false, product page does not show size selector; add-to-cart uses "One Size" */
+  hasSizes?: boolean;
 }
 
 export interface Size {

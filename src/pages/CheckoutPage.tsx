@@ -5,6 +5,7 @@ import { useShop } from "@/context/ShopContext";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useLocale } from "@/hooks/useLocale";
+import { generateOrderNumber } from "@/lib/utils";
 
 // All cities/municipalities in Georgia (country) – self-governing cities + municipalities
 const GEORGIAN_CITIES = [
@@ -147,22 +148,34 @@ const CheckoutPage = () => {
         .filter(Boolean)
         .join(", ");
 
-      const { data: orderData, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user?.id,
-          customer_name: formData.name,
-          customer_email: formData.email,
-          customer_phone: formData.phone,
-          shipping_address: shippingAddress,
-          total_amount: cartTotal,
-          status: "pending",
-          items: orderItems,
-        })
-        .select()
-        .single();
-
+      let orderData: { id: string; order_number: string | null } | null = null;
+      let orderError: Error | null = null;
+      const maxAttempts = 5;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const orderNumber = generateOrderNumber();
+        const { data, error } = await supabase
+          .from("orders")
+          .insert({
+            user_id: user?.id,
+            customer_name: formData.name,
+            customer_email: formData.email,
+            customer_phone: formData.phone,
+            shipping_address: shippingAddress,
+            total_amount: cartTotal,
+            status: "pending",
+            items: orderItems,
+            order_number: orderNumber,
+          })
+          .select()
+          .single();
+        orderData = data;
+        orderError = error;
+        if (!error) break;
+        if (error.code === "23505") continue; // unique violation, retry with new number
+        throw error;
+      }
       if (orderError) throw orderError;
+      if (!orderData) throw new Error("Failed to create order");
 
       // Notify Admin via Supabase Edge Function
       if (orderData) {
@@ -180,7 +193,8 @@ const CheckoutPage = () => {
       // Show thank you page in this tab (payment already opened in new tab above)
       navigate(pathFor("/thank-you"), {
         state: {
-          orderId: orderData.id,
+          orderId: orderData.order_number || orderData.id,
+          orderUuid: orderData.id,
           items: orderItems,
           total: cartTotal,
           currencySymbol: currency.symbol,
