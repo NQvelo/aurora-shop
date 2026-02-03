@@ -4,9 +4,11 @@ import { toast } from "sonner";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/lib/supabase";
 import heroAW from "@/assets/hero-aw25-1.jpg";
+import { useLocale } from "@/hooks/useLocale";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { pathFor } = useLocale();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +40,7 @@ const LoginPage = () => {
             navigate("/admin/orders");
           } else {
             toast.success("Successfully signed in");
-            navigate("/");
+            navigate(pathFor("/"));
           }
         }
       } else {

@@ -35,7 +35,7 @@ const CheckoutPage = () => {
     if (cart.length === 0 && !isSubmitting) {
       navigate(pathFor("/"));
     }
-  }, [cart, navigate, isSubmitting]);
+  }, [cart, navigate, isSubmitting, pathFor]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -90,9 +90,9 @@ const CheckoutPage = () => {
           .catch((err) => console.error("Error triggering notification:", err));
       }
 
-      // Clear cart and redirect
+      // Clear cart and redirect to payment page
       clearCart();
-      window.location.href = "https://bog.com";
+      window.location.href = "https://egreve.bog.ge/teklaqvelidze";
     } catch (error: any) {
       console.error("Error creating order:", error.message);
       alert("There was an error processing your order. Please try again.");
@@ -214,7 +214,7 @@ const CheckoutPage = () => {
               </div>
               <p className="text-[10px] text-muted-foreground mt-8 text-center leading-relaxed">
                 By clicking "Complete Order", you will be redirected to our
-                secure payment partner bog.com to finish your transaction.
+                secure payment page to finish your transaction.
               </p>
             </div>
           </div>

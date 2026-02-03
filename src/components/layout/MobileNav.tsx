@@ -29,7 +29,8 @@ const MobileNav = () => {
   ];
 
   const items = isAdmin ? adminNavItems : navItems;
-  const getPath = (path: string) => (path.startsWith("/admin") ? path : pathFor(path));
+  const getPath = (path: string) =>
+    path.startsWith("/admin") ? path : pathFor(path);
 
   if (!isMobileMenuOpen) return null;
 

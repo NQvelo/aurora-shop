@@ -45,16 +45,43 @@ const App = () => (
                 <Route index element={<Index />} />
                 <Route path="sale" element={<CategoryPage category="sale" />} />
                 <Route path="new" element={<CategoryPage category="new" />} />
-                <Route path="clothing" element={<CategoryPage category="clothing" />} />
-                <Route path="bestsellers" element={<CategoryPage category="bestsellers" />} />
+                <Route
+                  path="clothing"
+                  element={<CategoryPage category="clothing" />}
+                />
+                <Route
+                  path="bestsellers"
+                  element={<CategoryPage category="bestsellers" />}
+                />
                 <Route path="collections" element={<CollectionsPage />} />
-                <Route path="collections/dresses" element={<CategoryPage category="dresses" />} />
-                <Route path="collections/makeup" element={<CategoryPage category="makeup" />} />
-                <Route path="collections/jewelry" element={<CategoryPage category="jewelry" />} />
-                <Route path="collections/pet" element={<CategoryPage category="pet" />} />
-                <Route path="collections/best-friend" element={<CategoryPage category="best-friend" />} />
-                <Route path="collections/girlfriend" element={<CategoryPage category="girlfriend" />} />
-                <Route path="collections/:collection" element={<CategoryPage category="collections" />} />
+                <Route
+                  path="collections/dresses"
+                  element={<CategoryPage category="dresses" />}
+                />
+                <Route
+                  path="collections/makeup"
+                  element={<CategoryPage category="makeup" />}
+                />
+                <Route
+                  path="collections/jewelry"
+                  element={<CategoryPage category="jewelry" />}
+                />
+                <Route
+                  path="collections/pet"
+                  element={<CategoryPage category="pet" />}
+                />
+                <Route
+                  path="collections/best-friend"
+                  element={<CategoryPage category="best-friend" />}
+                />
+                <Route
+                  path="collections/girlfriend"
+                  element={<CategoryPage category="girlfriend" />}
+                />
+                <Route
+                  path="collections/:collection"
+                  element={<CategoryPage category="collections" />}
+                />
                 <Route path="stockists" element={<AboutPage />} />
                 <Route path="about" element={<AboutPage />} />
                 <Route path="login" element={<LoginPage />} />

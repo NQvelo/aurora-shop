@@ -43,6 +43,7 @@ const ProfilePage = () => {
   const { user, signOut } = useAuth();
   const { wishlist, currency } = useShop();
   const navigate = useNavigate();
+  const { pathFor } = useLocale();
   const [orderHistory, setOrderHistory] = useState<ProfileOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<
@@ -78,7 +79,7 @@ const ProfilePage = () => {
 
   if (!user) {
     // Redirect if not logged in
-    navigate("/");
+    navigate(pathFor("/"));
     return null;
   }
 
@@ -218,7 +219,7 @@ const ProfilePage = () => {
                         to find pieces you love.
                       </p>
                       <button
-                        onClick={() => navigate("/clothing")}
+                        onClick={() => navigate(pathFor("/clothing"))}
                         className="btn-luxury-outline"
                       >
                         Browse Collection
