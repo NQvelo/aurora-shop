@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
-import { Search, User, Heart, ShoppingBag, Menu, X } from 'lucide-react';
-import { useShop } from '@/context/ShopContext';
-import { useAuth } from '@/context/AuthContext';
+import { Link } from "react-router-dom";
+import { Search, User, Heart, ShoppingBag, Menu, X } from "lucide-react";
+import { useShop } from "@/context/ShopContext";
+import { useAuth } from "@/context/AuthContext";
 
 const Header = () => {
   const { user, signOut } = useAuth();
@@ -36,9 +36,9 @@ const Header = () => {
         to="/"
         className="absolute left-1/2 transform -translate-x-1/2 lg:static lg:transform-none lg:ml-[var(--nav-width)]"
       >
-        <img 
-          src="/logo.png" 
-          alt="Aurora by Tekla" 
+        <img
+          src={`${import.meta.env.BASE_URL}logo.png`}
+          alt="Aurora by Tekla"
           className="h-14 md:h-17 w-auto object-contain"
         />
       </Link>
