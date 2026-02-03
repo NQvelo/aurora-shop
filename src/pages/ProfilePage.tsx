@@ -113,76 +113,73 @@ const ProfilePage = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-            {/* Sidebar - Profile Info / Navigation */}
-            <div className="lg:col-span-1 space-y-8">
-              <div className="bg-muted/30 p-8 border border-border">
-                <div className="flex flex-col mb-6">
-                  <h2 className="font-display text-xl mb-1">
-                    {user.user_metadata?.full_name || "Valued Member"}
-                  </h2>
-                  <p className="text-xs text-muted-foreground lowercase">
-                    {user.email}
-                  </p>
-                </div>
-
-                <div className="space-y-1">
-                  <button
-                    type="button"
-                    onClick={() => setActiveSection("account")}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-widest transition-colors ${
-                      activeSection === "account"
-                        ? "text-foreground bg-muted border border-border"
-                        : "text-foreground bg-white border border-border hover:bg-muted"
-                    }`}
-                  >
-                    <Settings className="w-4 h-4" />
-                    Account Settings
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveSection("saved")}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-widest transition-colors ${
-                      activeSection === "saved"
-                        ? "text-foreground bg-muted border border-border"
-                        : "text-foreground bg-white border border-border hover:bg-muted"
-                    }`}
-                  >
-                    <Heart className="w-4 h-4" />
-                    Saved Items
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveSection("orders")}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-widest transition-colors ${
-                      activeSection === "orders"
-                        ? "text-foreground bg-muted border border-border"
-                        : "text-foreground bg-white border border-border hover:bg-muted"
-                    }`}
-                  >
-                    <Package className="w-4 h-4" />
-                    Purchases
-                  </button>
-                  <button
-                    onClick={handleSignOut}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-widest text-destructive bg-white border border-border hover:bg-destructive/5 transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
-                </div>
+            {/* Sidebar - Profile Info / Navigation (Zara-style text list) */}
+            <div className="lg:col-span-1">
+              <div className="mb-10">
+                <h2 className="font-display text-xl mb-1">
+                  {user.user_metadata?.full_name || "Valued Member"}
+                </h2>
+                <p className="text-xs text-muted-foreground lowercase">
+                  {user.email}
+                </p>
               </div>
 
-              <div className="bg-muted/10 p-6 border border-border">
-                <h3 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-4">
-                  Customer Support
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-[11px] uppercase tracking-widest">
-                      support@aurora.com
-                    </span>
-                  </div>
+              <nav className="space-y-3 text-sm">
+                <button
+                  type="button"
+                  onClick={() => setActiveSection("account")}
+                  className={`flex items-center gap-2 uppercase tracking-[0.15em] text-[11px] ${
+                    activeSection === "account"
+                      ? "underline underline-offset-4"
+                      : "hover:underline underline-offset-4"
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Account settings</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveSection("saved")}
+                  className={`flex items-center gap-2 uppercase tracking-[0.15em] text-[11px] ${
+                    activeSection === "saved"
+                      ? "underline underline-offset-4"
+                      : "hover:underline underline-offset-4"
+                  }`}
+                >
+                  <Heart className="w-4 h-4" />
+                  <span>Saved items</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveSection("orders")}
+                  className={`flex items-center gap-2 uppercase tracking-[0.15em] text-[11px] ${
+                    activeSection === "orders"
+                      ? "underline underline-offset-4"
+                      : "hover:underline underline-offset-4"
+                  }`}
+                >
+                  <Package className="w-4 h-4" />
+                  <span>Purchases</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="flex items-center gap-2 uppercase tracking-[0.15em] text-[11px] text-destructive hover:underline underline-offset-4"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </button>
+              </nav>
+
+              <div className="mt-10 text-[11px] text-muted-foreground">
+                <div className="flex items-center gap-3">
+                  <Mail className="w-4 h-4" />
+                  <span className="uppercase tracking-widest">
+                    teklaqvelidze@gmail.com
+                  </span>
                 </div>
               </div>
             </div>
@@ -213,7 +210,6 @@ const ProfilePage = () => {
                     </div>
                   ) : (
                     <div className="bg-muted/20 border border-dashed border-border py-24 flex flex-col items-center justify-center text-center px-4">
-                      <Heart className="w-12 h-12 text-muted/50 mb-4" />
                       <p className="text-muted-foreground text-sm font-light mb-6">
                         You haven't saved any items yet. Explore the collection
                         to find pieces you love.

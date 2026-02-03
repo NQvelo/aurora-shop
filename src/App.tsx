@@ -15,6 +15,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import AdminPage from "./pages/AdminPage";
 import ScrollToTop from "./components/ScrollToTop";
 import CollectionsPage from "./pages/CollectionsPage";
+import LoginPage from "./pages/LoginPage";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => (
               />
               <Route path="/stockists" element={<AboutPage />} />
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/login" element={<LoginPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/product/:id" element={<ProductPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />

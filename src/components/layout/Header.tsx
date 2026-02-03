@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, User, Heart, ShoppingBag, Menu, X } from "lucide-react";
 import { useShop } from "@/context/ShopContext";
 import { useAuth } from "@/context/AuthContext";
 
 const Header = () => {
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const {
     cartCount,
@@ -55,7 +56,7 @@ const Header = () => {
           </Link>
         ) : (
           <button
-            onClick={() => setIsLoginOpen(true)}
+            onClick={() => navigate("/login")}
             className="hidden md:flex items-center px-3 py-2 hover:underline transition-all text-[11px] uppercase tracking-[0.2em] font-medium"
           >
             Sign In

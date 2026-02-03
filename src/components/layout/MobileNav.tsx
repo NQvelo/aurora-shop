@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { useShop } from "@/context/ShopContext";
 import { useAuth } from "@/context/AuthContext";
@@ -21,7 +21,8 @@ const adminNavItems = [
 const MobileNav = () => {
   const { user } = useAuth();
   const location = useLocation();
-  const { isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginOpen } = useShop();
+  const navigate = useNavigate();
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useShop();
   const isAdmin = location.pathname.startsWith("/admin");
   const items = isAdmin ? adminNavItems : navItems;
 
@@ -72,7 +73,7 @@ const MobileNav = () => {
               <button
                 onClick={() => {
                   setIsMobileMenuOpen(false);
-                  setIsLoginOpen(true);
+                  navigate("/login");
                 }}
                 className="font-display text-3xl tracking-wide hover:opacity-60 transition-opacity"
               >

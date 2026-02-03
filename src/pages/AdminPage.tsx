@@ -38,6 +38,14 @@ interface Order {
   created_at: string;
 }
 
+const CATEGORY_OPTIONS = [
+  { value: "dresses", label: "Dresses" },
+  { value: "makeup", label: "Makeup" },
+  { value: "jewelry", label: "Jewelry" },
+  { value: "for your best friend", label: "For your best friend" },
+  { value: "for your girlfriend", label: "For your girlfriend" },
+] as const;
+
 const AdminPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -656,17 +664,59 @@ const AdminPage = () => {
                           <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-1">
                             Category
                           </label>
-                          <input
-                            type="text"
-                            value={productForm.category}
-                            onChange={(e) =>
-                              setProductForm({
-                                ...productForm,
-                                category: e.target.value,
-                              })
+                          <select
+                            value={
+                              CATEGORY_OPTIONS.some(
+                                (opt) => opt.value === productForm.category
+                              )
+                                ? productForm.category || ""
+                                : productForm.category
+                                ? "custom"
+                                : ""
                             }
-                            className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground"
-                          />
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === "custom") {
+                                setProductForm({
+                                  ...productForm,
+                                  category: "",
+                                });
+                              } else {
+                                setProductForm({
+                                  ...productForm,
+                                  category: value,
+                                });
+                              }
+                            }}
+                            className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none focus:border-foreground uppercase tracking-widest"
+                          >
+                            <option value="" disabled>
+                              Select category
+                            </option>
+                            {CATEGORY_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                            <option value="custom">Custom / Other</option>
+                          </select>
+                          {(!productForm.category ||
+                            !CATEGORY_OPTIONS.some(
+                              (opt) => opt.value === productForm.category
+                            )) && (
+                            <input
+                              type="text"
+                              placeholder="Enter custom category"
+                              value={productForm.category || ""}
+                              onChange={(e) =>
+                                setProductForm({
+                                  ...productForm,
+                                  category: e.target.value,
+                                })
+                              }
+                              className="mt-3 w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground"
+                            />
+                          )}
                         </div>
                         <div>
                           <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-1">
@@ -868,10 +918,10 @@ const AdminPage = () => {
                         <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
                           {product.category}
                         </p>
-                        <h3 className="text-xs font-medium tracking-wide mb-2">
+                        <h3 className="text-sm md:text-base font-medium mb-1">
                           {product.name}
                         </h3>
-                        <p className="font-mono text-xs">
+                        <p className="text-sm md:text-base">
                           ₾{product.price.toLocaleString()}
                         </p>
                       </div>

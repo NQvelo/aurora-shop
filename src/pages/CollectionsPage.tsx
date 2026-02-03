@@ -55,7 +55,7 @@ const CollectionsPage = () => {
                       />
                       <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors" />
                       <div className="absolute inset-0 flex items-center justify-center text-white px-6 text-center">
-                        <h3 className="font-display font-semibold text-2xl md:text-3xl tracking-wide">
+                        <h3 className="font-display font-semibold text-3xl md:text-3xl tracking-wide">
                           {c.title}
                         </h3>
                       </div>
