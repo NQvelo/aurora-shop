@@ -8,7 +8,8 @@
     <title>Aurora by Tekla</title>
     <meta name="description" content="Aurora by Tekla" />
     <meta name="author" content="Aurora" />
-    <link rel="icon" type="image/png" href="/aurora-shop/favicon.png" />
+    <link rel="icon" type="image/png" href="./favicon.png" />
+    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
 
     <!-- TODO: Update og:title to match your application name -->
     <meta property="og:title" content="Aurora" />
@@ -25,22 +26,39 @@
       name="twitter:image"
       content="/aurora-shop/lovable-uploads/cover-social.png"
     />
-    <script type="module" crossorigin src="/aurora-shop/assets/index-vPBzVIHe.js"></script>
+    <script type="module" crossorigin src="/aurora-shop/assets/index-D552IvBZ.js"></script>
     <link rel="modulepreload" crossorigin href="/aurora-shop/assets/vendor-i7E0B8m9.js">
     <link rel="modulepreload" crossorigin href="/aurora-shop/assets/ui-Cunl1uzP.js">
-    <link rel="stylesheet" crossorigin href="/aurora-shop/assets/index-C4gOkLD8.css">
+    <link rel="stylesheet" crossorigin href="/aurora-shop/assets/index-CUvd5_Os.css">
   </head>
 
   <body>
     <div id="root"></div>
     <script>
+      // Fix favicon path for GitHub Pages
       (function () {
-        var link = document.querySelector("link[rel*='icon']");
-        if (link) {
-          var faviconUrl =
-            "/aurora-shop/lovable-uploads/favicon.png?v=" + Date.now();
-          link.href = faviconUrl;
+        var pathname = window.location.pathname;
+        // Extract base path (e.g., /aurora-shop from /aurora-shop/ or /aurora-shop/products)
+        var pathParts = pathname.split("/").filter(function (p) {
+          return p;
+        });
+        var basePath = "";
+
+        // If we're in a GitHub Pages subdirectory (more than one path segment)
+        // Use the first segment as base (repository name)
+        if (pathParts.length > 0) {
+          basePath = "/" + pathParts[0] + "/";
+        } else {
+          basePath = "/";
         }
+
+        var faviconLinks = document.querySelectorAll("link[rel='icon']");
+        faviconLinks.forEach(function (link) {
+          var href = link.getAttribute("href");
+          if (href && (href.startsWith("./") || href.startsWith("favicon"))) {
+            link.href = basePath + "favicon.png";
+          }
+        });
       })();
     </script>
   </body>
