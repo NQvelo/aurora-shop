@@ -3,13 +3,16 @@ import Layout from "@/components/layout/Layout";
 import dresses from "@/assets/dresses.jpg";
 import makeup from "@/assets/makeup.jpg";
 import gf from "@/assets/gf.jpg";
-import bf from "@/assets/bf.jpg";
+import bf from "@/assets/bff.jpg";
+import pet from "@/assets/bf.jpg";
+
 import jewelry from "@/assets/jewlry.jpg";
 
 const categoryLinks = [
   { title: "Dresses", to: "/collections/dresses", image: dresses },
   { title: "Makeup", to: "/collections/makeup", image: makeup },
   { title: "Jewelry", to: "/collections/jewelry", image: jewelry },
+  { title: "For your pet", to: "/collections/pet", image: pet },
 
   {
     title: "For your best friend",

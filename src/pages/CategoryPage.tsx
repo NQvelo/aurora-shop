@@ -13,6 +13,7 @@ interface CategoryPageProps {
     | "dresses"
     | "makeup"
     | "jewelry"
+    | "pet"
     | "best-friend"
     | "girlfriend";
 }
@@ -41,12 +42,14 @@ const CategoryPage = ({ category }: CategoryPageProps) => {
       case "dresses":
       case "makeup":
       case "jewelry":
+      case "pet":
       case "best-friend":
       case "girlfriend": {
         const slugToCategory: Record<string, string> = {
           dresses: "dresses",
           makeup: "makeup",
           jewelry: "jewelry",
+          pet: "for your pet",
           "best-friend": "for your best friend",
           girlfriend: "for your girlfriend",
         };
@@ -83,6 +86,8 @@ const CategoryPage = ({ category }: CategoryPageProps) => {
         return "Makeup";
       case "jewelry":
         return "Jewelry";
+      case "pet":
+        return "For your pet";
       case "best-friend":
         return "For your best friend";
       case "girlfriend":

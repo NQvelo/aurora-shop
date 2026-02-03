@@ -54,6 +54,10 @@ const App = () => (
                 element={<CategoryPage category="jewelry" />}
               />
               <Route
+                path="/collections/pet"
+                element={<CategoryPage category="pet" />}
+              />
+              <Route
                 path="/collections/best-friend"
                 element={<CategoryPage category="best-friend" />}
               />

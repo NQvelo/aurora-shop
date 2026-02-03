@@ -42,6 +42,7 @@ const CATEGORY_OPTIONS = [
   { value: "dresses", label: "Dresses" },
   { value: "makeup", label: "Makeup" },
   { value: "jewelry", label: "Jewelry" },
+  { value: "for your pet", label: "For your pet" },
   { value: "for your best friend", label: "For your best friend" },
   { value: "for your girlfriend", label: "For your girlfriend" },
 ] as const;
