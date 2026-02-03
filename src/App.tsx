@@ -12,6 +12,7 @@ import AboutPage from "./pages/AboutPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import CheckoutPage from "./pages/CheckoutPage";
+import ThankYouPage from "./pages/ThankYouPage";
 import AdminPage from "./pages/AdminPage";
 import ScrollToTop from "./components/ScrollToTop";
 import CollectionsPage from "./pages/CollectionsPage";
@@ -88,6 +89,7 @@ const App = () => (
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="product/:id" element={<ProductPage />} />
                 <Route path="checkout" element={<CheckoutPage />} />
+                <Route path="thank-you" element={<ThankYouPage />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>

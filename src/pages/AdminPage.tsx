@@ -36,6 +36,11 @@ interface Order {
   status: string;
   items: OrderItem[];
   created_at: string;
+  arriving_date?: string | null;
+  accepted_at?: string | null;
+  processing_at?: string | null;
+  shipped_at?: string | null;
+  delivered_at?: string | null;
 }
 
 interface HomeSettings {
@@ -81,6 +86,10 @@ const AdminPage = () => {
   // Orders State
   const [orders, setOrders] = useState<Order[]>([]);
   const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
+  const [orderEditDraft, setOrderEditDraft] = useState<
+    Record<string, { status: string; arriving_date: string }>
+  >({});
+  const [savingOrderId, setSavingOrderId] = useState<string | null>(null);
 
   const toggleOrder = (id: string) => {
     const next = new Set(expandedOrders);
@@ -318,9 +327,16 @@ const AdminPage = () => {
   };
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    const now = new Date().toISOString();
+    const updates: Record<string, string | null> = { status: newStatus };
+    if (newStatus === "accepted") updates.accepted_at = now;
+    else if (newStatus === "processing") updates.processing_at = now;
+    else if (newStatus === "shipped") updates.shipped_at = now;
+    else if (newStatus === "delivered") updates.delivered_at = now;
+
     const { error } = await supabase
       .from("orders")
-      .update({ status: newStatus })
+      .update(updates)
       .eq("id", orderId);
 
     if (!error) {
@@ -337,11 +353,32 @@ const AdminPage = () => {
           .catch((err) => console.error("Error triggering notification:", err));
       }
       setOrders(
-        orders.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
+        orders.map((o) =>
+          o.id === orderId ? { ...o, status: newStatus, ...updates } : o
+        )
       );
       toast.success("Status updated");
     } else {
       toast.error("Failed to update status");
+    }
+  };
+
+  const updateOrderArrivingDate = async (orderId: string, date: string) => {
+    const value = date || null;
+    const { error } = await supabase
+      .from("orders")
+      .update({ arriving_date: value })
+      .eq("id", orderId);
+
+    if (!error) {
+      setOrders(
+        orders.map((o) =>
+          o.id === orderId ? { ...o, arriving_date: value } : o
+        )
+      );
+      toast.success("Arriving date updated");
+    } else {
+      toast.error("Failed to update arriving date");
     }
   };
 
@@ -530,7 +567,18 @@ const AdminPage = () => {
                     className="bg-white border border-border overflow-hidden shadow-sm transition-all hover:border-muted-foreground/30"
                   >
                     <div
-                      onClick={() => toggleOrder(order.id)}
+                      onClick={() => {
+                        toggleOrder(order.id);
+                        if (!expandedOrders.has(order.id)) {
+                          setOrderEditDraft((d) => ({
+                            ...d,
+                            [order.id]: {
+                              status: order.status,
+                              arriving_date: order.arriving_date || "",
+                            },
+                          }));
+                        }
+                      }}
                       className="p-6 flex flex-wrap justify-between items-center gap-4 cursor-pointer hover:bg-muted/5 transition-colors"
                     >
                       <div className="flex items-center gap-6">
@@ -572,29 +620,10 @@ const AdminPage = () => {
                           </div>
                         )}
                       </div>
-
-                      <div className="flex items-center gap-8">
-                        <div
-                          className="space-y-1 text-right"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                            Status
-                          </p>
-                          <select
-                            value={order.status}
-                            onChange={(e) =>
-                              updateOrderStatus(order.id, e.target.value)
-                            }
-                            className="text-[10px] uppercase tracking-wider font-bold bg-transparent border-none p-0 focus:ring-0 cursor-pointer hover:text-primary transition-colors"
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="processing">Processing</option>
-                            <option value="shipped">Shipped</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
-                          </select>
-                        </div>
+                      <div className="flex items-center gap-4">
+                        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          {order.status}
+                        </span>
                         {isExpanded ? (
                           <ChevronUp className="w-4 h-4 text-muted-foreground" />
                         ) : (
@@ -701,6 +730,93 @@ const AdminPage = () => {
                               </div>
                             </div>
                           </div>
+                        </div>
+                        {/* Status & arriving date at bottom with Save */}
+                        <div
+                          className="p-6 border-t border-border bg-muted/5 flex flex-wrap items-end gap-4"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div>
+                            <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">
+                              Status
+                            </label>
+                            <select
+                              value={
+                                orderEditDraft[order.id]?.status ?? order.status
+                              }
+                              onChange={(e) => {
+                                setOrderEditDraft((d) => ({
+                                  ...d,
+                                  [order.id]: {
+                                    status: e.target.value,
+                                    arriving_date:
+                                      d[order.id]?.arriving_date ??
+                                      order.arriving_date ??
+                                      "",
+                                  },
+                                }));
+                              }}
+                              className="text-xs font-medium bg-background border border-border px-3 py-2 focus:outline-none focus:border-foreground min-w-[140px]"
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="accepted">Accepted</option>
+                              <option value="processing">Processing</option>
+                              <option value="shipped">Shipped</option>
+                              <option value="delivered">Delivered</option>
+                              <option value="cancelled">Cancelled</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">
+                              Arriving date
+                            </label>
+                            <input
+                              type="date"
+                              value={
+                                orderEditDraft[order.id]?.arriving_date ??
+                                order.arriving_date ??
+                                ""
+                              }
+                              onChange={(e) =>
+                                setOrderEditDraft((d) => ({
+                                  ...d,
+                                  [order.id]: {
+                                    status: d[order.id]?.status ?? order.status,
+                                    arriving_date: e.target.value,
+                                  },
+                                }))
+                              }
+                              className="text-xs font-medium bg-background border border-border px-3 py-2 focus:outline-none focus:border-foreground"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            disabled={savingOrderId === order.id}
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              const draft = orderEditDraft[order.id];
+                              if (!draft) return;
+                              setSavingOrderId(order.id);
+                              try {
+                                await updateOrderStatus(order.id, draft.status);
+                                await updateOrderArrivingDate(
+                                  order.id,
+                                  draft.arriving_date || ""
+                                );
+                                setOrderEditDraft((d) => {
+                                  const next = { ...d };
+                                  delete next[order.id];
+                                  return next;
+                                });
+                              } finally {
+                                setSavingOrderId(null);
+                              }
+                            }}
+                            className="flex items-center gap-2 bg-foreground text-background px-4 py-2 text-[10px] uppercase tracking-widest font-bold hover:opacity-90 disabled:opacity-60 transition-opacity"
+                          >
+                            <Save className="w-3.5 h-3.5" />
+                            {savingOrderId === order.id ? "Saving…" : "Save"}
+                          </button>
                         </div>
                       </div>
                     )}

@@ -79,30 +79,89 @@ const ProductPage = () => {
     <Layout>
       <div className="min-h-screen">
         <div className="grid grid-cols-1 lg:grid-cols-2">
-          {/* Image Gallery */}
-          <div className="relative">
-            <div className="aspect-[3/4] lg:aspect-auto lg:h-[calc(100vh-var(--top-bar-height)-var(--header-height))] sticky top-[calc(var(--top-bar-height)+var(--header-height))]">
-              <img
-                src={product.images[currentImageIndex]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
+          {/* Image Gallery - sticky only on desktop, scrolls on mobile */}
+          <div className="relative flex flex-col lg:sticky lg:top-[calc(var(--top-bar-height)+var(--header-height))]">
+            {/* Desktop: vertical thumbnails left, main image right */}
+            <div className="hidden lg:flex flex-row min-h-0 lg:h-[calc(100vh-var(--top-bar-height)-var(--header-height))]">
+              {product.images.length > 1 ? (
+                <>
+                  <div className="flex flex-col gap-2 p-3 pr-2 overflow-y-auto flex-shrink-0 border-r border-border bg-background">
+                    {product.images.map((img, index) => {
+                      const isActive = index === currentImageIndex;
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => setCurrentImageIndex(index)}
+                          className={`flex-shrink-0 w-16 h-20 sm:w-20 overflow-hidden border-2 transition-all ${
+                            isActive
+                              ? "border-foreground opacity-100"
+                              : "border-border opacity-50 hover:opacity-75"
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex-1 min-w-0 relative bg-muted">
+                    <img
+                      src={product.images[currentImageIndex]}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 relative bg-muted">
+                  <img
+                    src={product.images[0]}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Thumbnail navigation if multiple images */}
-            {product.images.length > 1 && (
-              <div className="absolute bottom-4 left-4 flex gap-2">
-                {product.images.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={`w-2 h-2 rounded-full transition-colors ${
-                      index === currentImageIndex ? "bg-white" : "bg-white/50"
-                    }`}
-                  />
-                ))}
+            {/* Mobile: main image on top, small thumbnails below */}
+            <div className="flex flex-col lg:hidden">
+              <div className="aspect-[3/4] relative bg-muted">
+                <img
+                  src={product.images[currentImageIndex]}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
-            )}
+              {product.images.length > 1 && (
+                <div className="flex gap-2 p-3 overflow-x-auto border-t border-border bg-background">
+                  {product.images.map((img, index) => {
+                    const isActive = index === currentImageIndex;
+                    return (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setCurrentImageIndex(index)}
+                        className={`flex-shrink-0 w-16 h-20 overflow-hidden border-2 transition-all ${
+                          isActive
+                            ? "border-foreground opacity-100"
+                            : "border-border opacity-60 hover:opacity-80"
+                        }`}
+                      >
+                        <img
+                          src={img}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Product Details */}
@@ -112,8 +171,11 @@ const ProductPage = () => {
           >
             {/* Breadcrumb */}
             <nav className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground mb-6">
-<Link to={pathFor("/")} className="hover:text-foreground transition-colors">
-              Home
+              <Link
+                to={pathFor("/")}
+                className="hover:text-foreground transition-colors"
+              >
+                Home
               </Link>
               <span className="mx-2">/</span>
               <Link

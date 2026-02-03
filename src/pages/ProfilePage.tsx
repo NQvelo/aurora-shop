@@ -17,6 +17,7 @@ import { useShop } from "@/context/ShopContext";
 import ProductCard from "@/components/product/ProductCard";
 import { supabase } from "@/lib/supabase";
 import { useLocale } from "@/hooks/useLocale";
+import { useProducts } from "@/hooks/useProducts";
 
 interface OrderItem {
   product_id: string;
@@ -37,6 +38,186 @@ interface ProfileOrder {
   status: string;
   items: OrderItem[];
   created_at: string;
+  arriving_date?: string | null;
+  accepted_at?: string | null;
+  processing_at?: string | null;
+  shipped_at?: string | null;
+  delivered_at?: string | null;
+}
+
+const ORDER_STATUS_STEPS = [
+  "pending",
+  "accepted",
+  "processing",
+  "shipped",
+  "delivered",
+] as const;
+
+const ORDER_STATUS_LABELS: Record<string, string> = {
+  pending: "Ordered",
+  accepted: "Accepted",
+  processing: "Processing",
+  shipped: "Shipped",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+};
+
+function OrderStatusProgress({
+  status,
+  created_at,
+  arriving_date,
+  accepted_at,
+  processing_at,
+  shipped_at,
+  delivered_at,
+}: {
+  status: string;
+  created_at: string;
+  arriving_date?: string | null;
+  accepted_at?: string | null;
+  processing_at?: string | null;
+  shipped_at?: string | null;
+  delivered_at?: string | null;
+}) {
+  const stepIndex = ORDER_STATUS_STEPS.indexOf(
+    status?.toLowerCase() as (typeof ORDER_STATUS_STEPS)[number]
+  );
+  const currentStep = stepIndex >= 0 ? stepIndex : 0;
+  const progress =
+    ORDER_STATUS_STEPS.length <= 1
+      ? 0
+      : (currentStep / (ORDER_STATUS_STEPS.length - 1)) * 100;
+
+  const stageDates: (string | null)[] = [
+    created_at ? format(new Date(created_at), "MMM d, HH:mm") : null,
+    accepted_at ? format(new Date(accepted_at), "MMM d, HH:mm") : null,
+    processing_at ? format(new Date(processing_at), "MMM d, HH:mm") : null,
+    shipped_at ? format(new Date(shipped_at), "MMM d, HH:mm") : null,
+    delivered_at ? format(new Date(delivered_at), "MMM d, HH:mm") : null,
+  ];
+
+  return (
+    <div className="space-y-4">
+      <p className="text-center text-sm font-medium text-foreground">
+        {ORDER_STATUS_LABELS[status?.toLowerCase()] || status}
+      </p>
+      {/* Mobile: vertical progress bar - grey track, black fill from top */}
+      <div className="flex sm:hidden gap-3">
+        <div className="relative flex-shrink-0 w-6 flex flex-col items-center">
+          {ORDER_STATUS_STEPS.map((step, i) => {
+            const isComplete = i <= currentStep;
+            const isLast = i === ORDER_STATUS_STEPS.length - 1;
+            const isSegmentFilled = currentStep > i;
+            return (
+              <div key={step} className="flex flex-col items-center">
+                <div
+                  className={`w-6 h-6 rounded-full border-2 flex-shrink-0 z-10 ${
+                    isComplete
+                      ? "bg-foreground border-foreground"
+                      : "bg-background border-gray-200"
+                  }`}
+                />
+                {!isLast && (
+                  <div className="w-1 min-h-[28px] bg-gray-200 rounded-full overflow-hidden my-0.5 flex flex-col">
+                    <div
+                      className={`w-full rounded-full transition-all duration-300 flex-1 min-h-0 ${
+                        isSegmentFilled ? "bg-foreground" : ""
+                      }`}
+                      style={{ height: isSegmentFilled ? "100%" : "0" }}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex flex-col justify-between py-0.5 flex-1">
+          {ORDER_STATUS_STEPS.map((step, i) => {
+            const isComplete = i <= currentStep;
+            const date = stageDates[i] ?? null;
+            return (
+              <div
+                key={step}
+                className="flex flex-col py-1.5 min-h-[44px] justify-center"
+              >
+                <span
+                  className={`text-[10px] uppercase tracking-wider ${
+                    isComplete
+                      ? "text-foreground font-medium"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {ORDER_STATUS_LABELS[step] || step}
+                </span>
+                {date && (
+                  <span
+                    className={`text-[10px] mt-0.5 ${
+                      isComplete ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {date}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {/* Desktop: horizontal progress bar */}
+      <div className="hidden sm:block relative">
+        <div className="absolute top-[10px] left-0 right-0 h-1 rounded-full bg-gray-200" />
+        <div
+          className="absolute top-[10px] left-0 h-1 rounded-full bg-foreground transition-all duration-300"
+          style={{ width: `${progress}%` }}
+        />
+        <div className="relative flex justify-between">
+          {ORDER_STATUS_STEPS.map((step, i) => {
+            const isComplete = i <= currentStep;
+            const date = stageDates[i] ?? null;
+            return (
+              <div
+                key={step}
+                className="flex flex-col items-center"
+                style={{ flex: 1 }}
+              >
+                <div
+                  className={`w-6 h-6 rounded-full border-2 flex-shrink-0 z-10 ${
+                    isComplete
+                      ? "bg-foreground border-foreground"
+                      : "bg-background border-gray-200"
+                  }`}
+                />
+                <span
+                  className={`mt-2 text-[10px] uppercase tracking-wider text-center ${
+                    isComplete
+                      ? "text-foreground font-medium"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {ORDER_STATUS_LABELS[step] || step}
+                </span>
+                {date && (
+                  <span
+                    className={`text-[10px] mt-0.5 ${
+                      isComplete ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {date}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {arriving_date && (
+        <p className="text-center text-xs text-muted-foreground pt-1 border-t border-border mt-3 pt-3">
+          Estimate arriving date –{" "}
+          {format(new Date(arriving_date), "MMMM d, yyyy")}
+        </p>
+      )}
+    </div>
+  );
 }
 
 const ProfilePage = () => {
@@ -44,6 +225,7 @@ const ProfilePage = () => {
   const { wishlist, currency } = useShop();
   const navigate = useNavigate();
   const { pathFor } = useLocale();
+  const { data: products = [] } = useProducts();
   const [orderHistory, setOrderHistory] = useState<ProfileOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<
@@ -292,7 +474,31 @@ const ProfilePage = () => {
                                   </p>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-6">
+                              <div className="flex items-center gap-4 sm:gap-6">
+                                <div className="hidden sm:block w-24 flex-shrink-0">
+                                  <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-foreground rounded-full transition-all"
+                                      style={{
+                                        width: `${(() => {
+                                          const idx =
+                                            ORDER_STATUS_STEPS.indexOf(
+                                              order.status?.toLowerCase() as (typeof ORDER_STATUS_STEPS)[number]
+                                            );
+                                          if (idx < 0) return 0;
+                                          return (
+                                            (idx /
+                                              Math.max(
+                                                1,
+                                                ORDER_STATUS_STEPS.length - 1
+                                              )) *
+                                            100
+                                          );
+                                        })()}%`,
+                                      }}
+                                    />
+                                  </div>
+                                </div>
                                 <span
                                   className={`text-[10px] uppercase tracking-widest font-medium ${
                                     order.status === "delivered"
@@ -318,45 +524,66 @@ const ProfilePage = () => {
                               order.items &&
                               order.items.length > 0 && (
                                 <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                  <div className="px-6 pt-4 pb-2 border-t border-border">
+                                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+                                      Order status
+                                    </p>
+                                    <OrderStatusProgress
+                                      status={order.status}
+                                      created_at={order.created_at}
+                                      arriving_date={order.arriving_date}
+                                      accepted_at={order.accepted_at}
+                                      processing_at={order.processing_at}
+                                      shipped_at={order.shipped_at}
+                                      delivered_at={order.delivered_at}
+                                    />
+                                  </div>
                                   <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border border-t border-border">
                                     <div className="col-span-1 md:col-span-2 p-6">
                                       <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
                                         Purchased Items
                                       </p>
                                       <ul className="space-y-3">
-                                        {order.items.map((item, i) => (
-                                          <li
-                                            key={i}
-                                            className="flex gap-3 justify-between items-center text-sm"
-                                          >
-                                            <div className="flex items-center gap-3 min-w-0 flex-1">
-                                              {item.image ? (
-                                                <img
-                                                  src={item.image}
-                                                  alt={item.name}
-                                                  className="w-12 h-12 object-cover shrink-0 border border-border"
-                                                />
-                                              ) : (
-                                                <div className="w-12 h-12 shrink-0 border border-border bg-muted flex items-center justify-center text-[10px] text-muted-foreground">
-                                                  —
-                                                </div>
-                                              )}
-                                              <span className="font-medium min-w-0">
-                                                {item.name}{" "}
-                                                <span className="text-muted-foreground font-light ml-1">
-                                                  Size: {item.size} ×{" "}
-                                                  {item.quantity}
+                                        {order.items.map((item, i) => {
+                                          const productImage =
+                                            item.image ||
+                                            products.find(
+                                              (p) => p.id === item.product_id
+                                            )?.images?.[0];
+                                          return (
+                                            <li
+                                              key={i}
+                                              className="flex gap-3 justify-between items-center text-sm"
+                                            >
+                                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                {productImage ? (
+                                                  <img
+                                                    src={productImage}
+                                                    alt={item.name}
+                                                    className="w-12 h-12 object-cover shrink-0 border border-border"
+                                                  />
+                                                ) : (
+                                                  <div className="w-12 h-12 shrink-0 border border-border bg-muted flex items-center justify-center text-[10px] text-muted-foreground">
+                                                    —
+                                                  </div>
+                                                )}
+                                                <span className="font-medium min-w-0">
+                                                  {item.name}{" "}
+                                                  <span className="text-muted-foreground font-light ml-1">
+                                                    Size: {item.size} ×{" "}
+                                                    {item.quantity}
+                                                  </span>
                                                 </span>
+                                              </div>
+                                              <span className="font-mono text-xs shrink-0">
+                                                {currency.symbol}
+                                                {(
+                                                  item.price * item.quantity
+                                                ).toLocaleString()}
                                               </span>
-                                            </div>
-                                            <span className="font-mono text-xs shrink-0">
-                                              {currency.symbol}
-                                              {(
-                                                item.price * item.quantity
-                                              ).toLocaleString()}
-                                            </span>
-                                          </li>
-                                        ))}
+                                            </li>
+                                          );
+                                        })}
                                       </ul>
                                       <div className="mt-6 pt-4 border-t border-border/50 flex justify-between items-center">
                                         <span className="text-[11px] uppercase tracking-[0.2em] font-bold">

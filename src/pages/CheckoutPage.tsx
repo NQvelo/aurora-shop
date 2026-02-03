@@ -6,6 +6,74 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useLocale } from "@/hooks/useLocale";
 
+// All cities/municipalities in Georgia (country) – self-governing cities + municipalities
+const GEORGIAN_CITIES = [
+  "Tbilisi",
+  "Batumi",
+  "Kutaisi",
+  "Rustavi",
+  "Poti",
+  "Abasha",
+  "Adigeni",
+  "Akhalkalaki",
+  "Akhaltsikhe",
+  "Akhmeta",
+  "Ambrolauri",
+  "Aspindza",
+  "Baghdati",
+  "Bolnisi",
+  "Borjomi",
+  "Chiatura",
+  "Chokhatauri",
+  "Chkhorotsku",
+  "Dedoplistskaro",
+  "Dmanisi",
+  "Dusheti",
+  "Gardabani",
+  "Gori",
+  "Gurjaani",
+  "Kareli",
+  "Kaspi",
+  "Kazbegi",
+  "Keda",
+  "Kharagauli",
+  "Khashuri",
+  "Khelvachauri",
+  "Khobi",
+  "Khoni",
+  "Khulo",
+  "Kobuleti",
+  "Lagodekhi",
+  "Lanchkhuti",
+  "Lentekhi",
+  "Marneuli",
+  "Martvili",
+  "Mestia",
+  "Mtskheta",
+  "Ninotsminda",
+  "Oni",
+  "Ozurgeti",
+  "Sachkhere",
+  "Sagarejo",
+  "Senaki",
+  "Shuakhevi",
+  "Sighnaghi",
+  "Samtredia",
+  "Telavi",
+  "Terjola",
+  "Tetritskaro",
+  "Tianeti",
+  "Tsageri",
+  "Tsalenjikha",
+  "Tsalka",
+  "Tskaltubo",
+  "Tkibuli",
+  "Vani",
+  "Zestaponi",
+  "Zugdidi",
+  "Other",
+];
+
 const CheckoutPage = () => {
   const { cart, cartTotal, currency, clearCart } = useShop();
   const { user } = useAuth();
@@ -17,6 +85,9 @@ const CheckoutPage = () => {
     email: "",
     phone: "",
     address: "",
+    houseNumber: "",
+    postCode: "",
+    city: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,7 +109,9 @@ const CheckoutPage = () => {
   }, [cart, navigate, isSubmitting, pathFor]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -61,6 +134,15 @@ const CheckoutPage = () => {
             : item.product.price,
       }));
 
+      const shippingAddress = [
+        formData.address,
+        formData.houseNumber && `№ ${formData.houseNumber}`,
+        formData.postCode && formData.postCode,
+        formData.city,
+      ]
+        .filter(Boolean)
+        .join(", ");
+
       const { data: orderData, error: orderError } = await supabase
         .from("orders")
         .insert({
@@ -68,7 +150,7 @@ const CheckoutPage = () => {
           customer_name: formData.name,
           customer_email: formData.email,
           customer_phone: formData.phone,
-          shipping_address: formData.address,
+          shipping_address: shippingAddress,
           total_amount: cartTotal,
           status: "pending",
           items: orderItems,
@@ -90,11 +172,26 @@ const CheckoutPage = () => {
           .catch((err) => console.error("Error triggering notification:", err));
       }
 
-      // Clear cart and redirect to payment page
+      // Open payment in new tab, then show thank you page in this tab
+      window.open(
+        "https://egreve.bog.ge/teklaqvelidze",
+        "_blank",
+        "noopener,noreferrer"
+      );
       clearCart();
-      window.location.href = "https://egreve.bog.ge/teklaqvelidze";
-    } catch (error: any) {
-      console.error("Error creating order:", error.message);
+      navigate(pathFor("/thank-you"), {
+        state: {
+          orderId: orderData.id,
+          items: orderItems,
+          total: cartTotal,
+          currencySymbol: currency.symbol,
+        },
+      });
+    } catch (error) {
+      console.error(
+        "Error creating order:",
+        error instanceof Error ? error.message : error
+      );
       alert("There was an error processing your order. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -161,16 +258,64 @@ const CheckoutPage = () => {
                 </div>
                 <div>
                   <label className="block text-[10px] uppercase tracking-wider mb-1">
-                    Shipping Address
+                    Street / Address
                   </label>
-                  <textarea
+                  <input
+                    type="text"
                     name="address"
                     required
-                    rows={3}
                     value={formData.address}
                     onChange={handleChange}
-                    className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground resize-none"
+                    placeholder="e.g. Rustaveli Avenue"
+                    className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground"
                   />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-wider mb-1">
+                      House number
+                    </label>
+                    <input
+                      type="text"
+                      name="houseNumber"
+                      value={formData.houseNumber}
+                      onChange={handleChange}
+                      placeholder="e.g. 12"
+                      className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-wider mb-1">
+                      Post code
+                    </label>
+                    <input
+                      type="text"
+                      name="postCode"
+                      value={formData.postCode}
+                      onChange={handleChange}
+                      placeholder="e.g. 0108"
+                      className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-wider mb-1">
+                    City
+                  </label>
+                  <select
+                    name="city"
+                    required
+                    value={formData.city}
+                    onChange={handleChange}
+                    className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground appearance-none cursor-pointer"
+                  >
+                    <option value="">Select city</option>
+                    {GEORGIAN_CITIES.map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <button
                   type="submit"
