@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Search, Package, ShoppingBag } from "lucide-react";
+import { Search, Package, ShoppingBag, Home } from "lucide-react";
 import { useShop } from "@/context/ShopContext";
 
 const navItems = [
@@ -13,6 +13,7 @@ const navItems = [
 ];
 
 const adminNavItems = [
+  { label: "Home", path: "/admin/home", icon: Home },
   { label: "Orders", path: "/admin/orders", icon: Package },
   { label: "Products", path: "/admin/products", icon: ShoppingBag },
 ];

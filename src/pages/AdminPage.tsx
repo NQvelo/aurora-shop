@@ -38,6 +38,15 @@ interface Order {
   created_at: string;
 }
 
+interface HomeSettings {
+  left_title: string;
+  left_subtitle: string;
+  left_image: string;
+  right_image: string;
+  cta_text: string;
+  cta_link: string;
+}
+
 const CATEGORY_OPTIONS = [
   { value: "dresses", label: "Dresses" },
   { value: "makeup", label: "Makeup" },
@@ -55,6 +64,8 @@ const AdminPage = () => {
   // Tab handling based on URL
   const activeTab = location.pathname.includes("products")
     ? "products"
+    : location.pathname.includes("home")
+    ? "home"
     : "orders";
 
   useEffect(() => {
@@ -63,7 +74,7 @@ const AdminPage = () => {
     }
   }, [location.pathname, navigate]);
 
-  const setActiveTab = (tab: "orders" | "products") => {
+  const setActiveTab = (tab: "orders" | "products" | "home") => {
     navigate(`/admin/${tab}`);
   };
 
@@ -86,6 +97,21 @@ const AdminPage = () => {
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const DEFAULT_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+
+  const [homeForm, setHomeForm] = useState<HomeSettings>({
+    left_title: "Autumn/Winter 2025",
+    left_subtitle: "New Season",
+    left_image: "",
+    right_image: "",
+    cta_text: "Shop the Collection",
+    cta_link: "/collections/aw25",
+  });
+  const [homeId, setHomeId] = useState<string | null>(null);
+  const [isSavingHome, setIsSavingHome] = useState(false);
+  const leftHeroFileRef = useRef<HTMLInputElement>(null);
+  const rightHeroFileRef = useRef<HTMLInputElement>(null);
+  const [uploadingLeftHero, setUploadingLeftHero] = useState(false);
+  const [uploadingRightHero, setUploadingRightHero] = useState(false);
 
   const [productForm, setProductForm] = useState<Partial<Product>>({
     name: "",
@@ -184,6 +210,7 @@ const AdminPage = () => {
         setIsAdmin(true);
         fetchOrders();
         fetchProducts();
+        fetchHomeSettings();
       }
     };
 
@@ -223,6 +250,70 @@ const AdminPage = () => {
           sizes: normalizeSizes(p.sizes),
         }))
       );
+    }
+  };
+
+  const fetchHomeSettings = async () => {
+    const { data, error } = await supabase
+      .from("home_settings")
+      .select("*")
+      .limit(1)
+      .single();
+
+    if (!error && data) {
+      setHomeId(data.id);
+      setHomeForm({
+        left_title: data.left_title || "Autumn/Winter 2025",
+        left_subtitle: data.left_subtitle || "New Season",
+        left_image: data.left_image || "",
+        right_image: data.right_image || "",
+        cta_text: data.cta_text || "Shop the Collection",
+        cta_link: data.cta_link || "/collections/aw25",
+      });
+    }
+  };
+
+  const handleHomeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingHome(true);
+
+    try {
+      if (homeId) {
+        const { error } = await supabase
+          .from("home_settings")
+          .update({
+            left_title: homeForm.left_title,
+            left_subtitle: homeForm.left_subtitle,
+            left_image: homeForm.left_image,
+            right_image: homeForm.right_image,
+            cta_text: homeForm.cta_text,
+            cta_link: homeForm.cta_link,
+          })
+          .eq("id", homeId);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from("home_settings")
+          .insert([
+            {
+              left_title: homeForm.left_title,
+              left_subtitle: homeForm.left_subtitle,
+              left_image: homeForm.left_image,
+              right_image: homeForm.right_image,
+              cta_text: homeForm.cta_text,
+              cta_link: homeForm.cta_link,
+            },
+          ])
+          .select()
+          .single();
+        if (error) throw error;
+        setHomeId(data.id);
+      }
+      toast.success("Homepage header updated");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to save homepage settings");
+    } finally {
+      setIsSavingHome(false);
     }
   };
 
@@ -284,6 +375,47 @@ const AdminPage = () => {
 
     setProductForm({ ...productForm, images: newImages });
     setUploadingImages(false);
+  };
+
+  const handleHeroImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    side: "left" | "right"
+  ) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+
+    const setUploading =
+      side === "left" ? setUploadingLeftHero : setUploadingRightHero;
+
+    setUploading(true);
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `hero-${side}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("product-images")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        toast.error(`Error uploading ${file.name}`);
+        return;
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("product-images").getPublicUrl(filePath);
+
+      setHomeForm((prev) => ({
+        ...prev,
+        left_image: side === "left" ? publicUrl : prev.left_image,
+        right_image: side === "right" ? publicUrl : prev.right_image,
+      }));
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
   };
 
   const removeImage = (index: number) => {
@@ -583,7 +715,7 @@ const AdminPage = () => {
                 </div>
               )}
             </div>
-          ) : (
+          ) : activeTab === "products" ? (
             <div>
               {isAddingProduct || editingProduct ? (
                 <div className="bg-white border border-border p-8 shadow-sm">
@@ -930,6 +1062,171 @@ const AdminPage = () => {
                   ))}
                 </div>
               )}
+            </div>
+          ) : (
+            <div className="bg-white border border-border p-8 shadow-sm">
+              <div className="flex justify-between items-center mb-8 border-b border-border pb-4">
+                <h2 className="text-xs uppercase tracking-[0.2em] font-bold">
+                  Home Page Header
+                </h2>
+              </div>
+
+              <form
+                onSubmit={handleHomeSubmit}
+                className="grid grid-cols-1 md:grid-cols-2 gap-8"
+              >
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-1">
+                      Left Subtitle
+                    </label>
+                    <input
+                      type="text"
+                      value={homeForm.left_subtitle}
+                      onChange={(e) =>
+                        setHomeForm({
+                          ...homeForm,
+                          left_subtitle: e.target.value,
+                        })
+                      }
+                      className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-1">
+                      Left Title
+                    </label>
+                    <input
+                      type="text"
+                      value={homeForm.left_title}
+                      onChange={(e) =>
+                        setHomeForm({
+                          ...homeForm,
+                          left_title: e.target.value,
+                        })
+                      }
+                      className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-2">
+                      Left Image
+                    </label>
+                    {homeForm.left_image && (
+                      <div className="mb-3 aspect-video border border-border overflow-hidden">
+                        <img
+                          src={homeForm.left_image}
+                          alt="Left hero"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => leftHeroFileRef.current?.click()}
+                      disabled={uploadingLeftHero}
+                      className="w-full border border-dashed border-border py-2 text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-muted transition-colors disabled:opacity-60"
+                    >
+                      <Upload
+                        className={`w-4 h-4 ${
+                          uploadingLeftHero ? "animate-bounce" : ""
+                        }`}
+                      />
+                      {uploadingLeftHero
+                        ? "Uploading..."
+                        : "Upload from device"}
+                    </button>
+                    <input
+                      ref={leftHeroFileRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleHeroImageUpload(e, "left")}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-2">
+                      Right Image
+                    </label>
+                    {homeForm.right_image && (
+                      <div className="mb-3 aspect-video border border-border overflow-hidden">
+                        <img
+                          src={homeForm.right_image}
+                          alt="Right hero"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => rightHeroFileRef.current?.click()}
+                      disabled={uploadingRightHero}
+                      className="w-full border border-dashed border-border py-2 text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-muted transition-colors disabled:opacity-60"
+                    >
+                      <Upload
+                        className={`w-4 h-4 ${
+                          uploadingRightHero ? "animate-bounce" : ""
+                        }`}
+                      />
+                      {uploadingRightHero
+                        ? "Uploading..."
+                        : "Upload from device"}
+                    </button>
+                    <input
+                      ref={rightHeroFileRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleHeroImageUpload(e, "right")}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-1">
+                      Button Text
+                    </label>
+                    <input
+                      type="text"
+                      value={homeForm.cta_text}
+                      onChange={(e) =>
+                        setHomeForm({
+                          ...homeForm,
+                          cta_text: e.target.value,
+                        })
+                      }
+                      className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-1">
+                      Button Link
+                    </label>
+                    <input
+                      type="text"
+                      value={homeForm.cta_link}
+                      onChange={(e) =>
+                        setHomeForm({
+                          ...homeForm,
+                          cta_link: e.target.value,
+                        })
+                      }
+                      className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground"
+                    />
+                  </div>
+                  <div className="pt-4">
+                    <button
+                      type="submit"
+                      disabled={isSavingHome}
+                      className="btn-luxury-primary w-full flex items-center justify-center gap-2 disabled:opacity-60"
+                    >
+                      <Save className="w-4 h-4" />
+                      {isSavingHome ? "Saving..." : "Save Header"}
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
           )}
         </div>
