@@ -4,10 +4,6 @@
   "description": "",
   "type": "module",
   "homepage": "https://nqvelo.github.io/aurora-shop/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/NQvelo/aurora-shop.git"
-  },
   "scripts": {
     "dev": "vite",
     "build": "vite build && npm run copy404",
