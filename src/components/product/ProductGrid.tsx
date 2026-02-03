@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Product, SortOption } from '@/types/product';
-import ProductCard from './ProductCard';
+import { useState } from "react";
+import { Product, SortOption } from "@/types/product";
+import ProductCard from "./ProductCard";
 
 interface ProductGridProps {
   products: Product[];
@@ -8,20 +8,28 @@ interface ProductGridProps {
   showSort?: boolean;
 }
 
-const ProductGrid = ({ products, title, showSort = true }: ProductGridProps) => {
-  const [sortBy, setSortBy] = useState<SortOption>('newest');
+const ProductGrid = ({
+  products,
+  title,
+  showSort = true,
+}: ProductGridProps) => {
+  const [sortBy, setSortBy] = useState<SortOption>("newest");
 
   const sortedProducts = [...products].sort((a, b) => {
     switch (sortBy) {
-      case 'price-asc':
-        return (a.onSale && a.salePrice ? a.salePrice : a.price) -
-               (b.onSale && b.salePrice ? b.salePrice : b.price);
-      case 'price-desc':
-        return (b.onSale && b.salePrice ? b.salePrice : b.price) -
-               (a.onSale && a.salePrice ? a.salePrice : a.price);
-      case 'bestseller':
+      case "price-asc":
+        return (
+          (a.onSale && a.salePrice ? a.salePrice : a.price) -
+          (b.onSale && b.salePrice ? b.salePrice : b.price)
+        );
+      case "price-desc":
+        return (
+          (b.onSale && b.salePrice ? b.salePrice : b.price) -
+          (a.onSale && a.salePrice ? a.salePrice : a.price)
+        );
+      case "bestseller":
         return (b.isBestseller ? 1 : 0) - (a.isBestseller ? 1 : 0);
-      case 'newest':
+      case "newest":
       default:
         return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
     }
@@ -32,11 +40,11 @@ const ProductGrid = ({ products, title, showSort = true }: ProductGridProps) => 
       {/* Header */}
       <div className="flex items-center justify-between mb-8 px-6 lg:px-12 pt-8">
         {title && (
-          <h1 className="font-display text-2xl md:text-3xl tracking-wide">
+          <h1 className="font-body text-2xl md:text-3xl font-normal">
             {title}
           </h1>
         )}
-        
+
         {showSort && (
           <div className="flex items-center gap-4">
             <span className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground hidden md:inline">
@@ -59,7 +67,8 @@ const ProductGrid = ({ products, title, showSort = true }: ProductGridProps) => 
       {/* Products count */}
       <div className="px-6 lg:px-12 mb-4">
         <p className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
-          {sortedProducts.length} {sortedProducts.length === 1 ? 'product' : 'products'}
+          {sortedProducts.length}{" "}
+          {sortedProducts.length === 1 ? "product" : "products"}
         </p>
       </div>
 

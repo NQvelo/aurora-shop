@@ -1,8 +1,10 @@
-import { X, ShoppingBag, Trash2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useShop } from '@/context/ShopContext';
+import { X, ShoppingBag, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useShop } from "@/context/ShopContext";
+import { useLocale } from "@/hooks/useLocale";
 
 const WishlistDrawer = () => {
+  const { pathFor } = useLocale();
   const {
     wishlist,
     isWishlistOpen,
@@ -30,7 +32,7 @@ const WishlistDrawer = () => {
       <div className="drawer-panel animate-slide-in-right">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-[11px] uppercase tracking-[0.15em] font-medium">
+          <h2 className="text-lg font-body font-normal">
             Wishlist ({wishlist.length})
           </h2>
           <button
@@ -54,7 +56,7 @@ const WishlistDrawer = () => {
                 <div key={item.product.id} className="flex gap-4">
                   {/* Product image */}
                   <Link
-                    to={`/product/${item.product.id}`}
+                    to={pathFor(`/product/${item.product.id}`)}
                     onClick={() => setIsWishlistOpen(false)}
                     className="w-24 h-32 bg-muted flex-shrink-0"
                   >
@@ -68,10 +70,10 @@ const WishlistDrawer = () => {
                   {/* Product details */}
                   <div className="flex-1 flex flex-col">
                     <Link
-                      to={`/product/${item.product.id}`}
+                      to={pathFor(`/product/${item.product.id}`)}
                       onClick={() => setIsWishlistOpen(false)}
                     >
-                      <h3 className="text-sm font-medium mb-1 hover:underline">
+                      <h3 className="text-sm font-normal mb-1 hover:underline">
                         {item.product.name}
                       </h3>
                     </Link>
@@ -93,7 +95,7 @@ const WishlistDrawer = () => {
                     {/* Actions */}
                     <div className="flex items-center gap-2 mt-2">
                       <Link
-                        to={`/product/${item.product.id}`}
+                        to={pathFor(`/product/${item.product.id}`)}
                         onClick={() => setIsWishlistOpen(false)}
                         className="flex-1 btn-luxury-outline text-[10px] py-2"
                       >

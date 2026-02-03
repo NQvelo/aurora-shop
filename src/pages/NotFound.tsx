@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
+import { useLocale } from "@/hooks/useLocale";
 
 const NotFound = () => {
+  const { pathFor } = useLocale();
   return (
     <Layout>
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-6">
@@ -9,7 +11,7 @@ const NotFound = () => {
         <p className="text-muted-foreground text-sm mb-8">
           The page you are looking for does not exist.
         </p>
-        <Link to="/" className="btn-luxury-outline">
+        <Link to={pathFor("/")} className="btn-luxury-outline">
           Return Home
         </Link>
       </div>

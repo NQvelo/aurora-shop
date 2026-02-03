@@ -5,6 +5,7 @@ import { useShop } from "@/context/ShopContext";
 import { useProducts } from "@/hooks/useProducts";
 import { products as staticProducts } from "@/data/products";
 import { Product } from "@/types/product";
+import { useLocale } from "@/hooks/useLocale";
 
 const DEBOUNCE_MS = 200;
 const SEARCH_FIELDS = [
@@ -82,7 +83,7 @@ const SearchModal = () => {
     <div className="fixed inset-0 bg-background z-50 animate-fade-in overflow-y-auto">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-[11px] uppercase tracking-[0.15em] font-medium">
+          <h2 className="text-[11px] uppercase tracking-[0.15em] font-normal">
             Search
           </h2>
           <button
@@ -128,7 +129,7 @@ const SearchModal = () => {
                     {results.map((product) => (
                       <Link
                         key={product.id}
-                        to={`/product/${product.id}`}
+                        to={pathFor(`/product/${product.id}`)}
                         onClick={() => setIsSearchOpen(false)}
                         className="group"
                       >
@@ -145,7 +146,7 @@ const SearchModal = () => {
                             </div>
                           )}
                         </div>
-                        <h3 className="text-sm font-medium mb-1 group-hover:underline">
+                        <h3 className="text-sm font-normal mb-1 group-hover:underline">
                           {product.name}
                         </h3>
                         <p className="text-sm text-muted-foreground">

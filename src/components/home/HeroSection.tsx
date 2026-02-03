@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import heroAW1 from "@/assets/hero-aw25-1.jpg";
 import heroAW2 from "@/assets/hero-aw25-2.jpg";
 import { supabase } from "@/lib/supabase";
+import { useLocale } from "@/hooks/useLocale";
 
 interface HomeSettings {
   left_title: string;
@@ -14,6 +15,7 @@ interface HomeSettings {
 }
 
 const HeroSection = () => {
+  const { pathFor } = useLocale();
   const [settings, setSettings] = useState<HomeSettings | null>(null);
 
   useEffect(() => {
@@ -54,12 +56,12 @@ const HeroSection = () => {
           alt="Autumn Winter 2025 Collection"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="hero-panel-content">
-          <p className="text-[10px] uppercase tracking-[0.25em] mb-2 opacity-80">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
+        <div className="hero-panel-content font-body">
+          <p className="text-[10px] uppercase tracking-[0.25em] mb-2 opacity-90 text-white drop-shadow-lg">
             {leftSubtitle}
           </p>
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl tracking-wide mb-4">
+          <h2 className="font-body text-3xl md:text-4xl lg:text-5xl font-normal mb-4 text-white drop-shadow-lg">
             {leftTitle}
           </h2>
         </div>
@@ -72,11 +74,11 @@ const HeroSection = () => {
           alt="Autumn Winter 2025 Collection"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="hero-panel-content">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/30 to-black/20" />
+        <div className="hero-panel-content font-body">
           <Link
-            to={ctaLink}
-            className="btn-luxury bg-white/90 text-black hover:bg-white"
+            to={pathFor(ctaLink)}
+            className="btn-luxury bg-white/95 text-black hover:bg-white shadow-lg"
           >
             {ctaText}
           </Link>

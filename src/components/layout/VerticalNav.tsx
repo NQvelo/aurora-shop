@@ -1,28 +1,33 @@
 import { Link, useLocation } from "react-router-dom";
 import { Search, Package, ShoppingBag, Home } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useShop } from "@/context/ShopContext";
-
-const navItems = [
-  { label: "Sale", path: "/sale" },
-  { label: "New In", path: "/new" },
-  { label: "Clothing", path: "/clothing" },
-  { label: "Bestsellers", path: "/bestsellers" },
-  { label: "Collections", path: "/collections" },
-
-  { label: "About", path: "/about" },
-];
-
-const adminNavItems = [
-  { label: "Home", path: "/admin/home", icon: Home },
-  { label: "Orders", path: "/admin/orders", icon: Package },
-  { label: "Products", path: "/admin/products", icon: ShoppingBag },
-];
+import { useLocale } from "@/hooks/useLocale";
 
 const VerticalNav = () => {
+  const { t } = useTranslation();
   const location = useLocation();
+  const { pathFor } = useLocale();
   const { setIsSearchOpen } = useShop();
   const isAdmin = location.pathname.startsWith("/admin");
+
+  const navItems = [
+    { label: t("nav.sale"), path: "/sale" },
+    { label: t("nav.new"), path: "/new" },
+    { label: t("nav.clothing"), path: "/clothing" },
+    { label: t("nav.bestsellers"), path: "/bestsellers" },
+    { label: t("nav.collections"), path: "/collections" },
+    { label: t("nav.about"), path: "/about" },
+  ];
+
+  const adminNavItems = [
+    { label: t("admin.home"), path: "/admin/home", icon: Home },
+    { label: t("admin.orders"), path: "/admin/orders", icon: Package },
+    { label: t("admin.products"), path: "/admin/products", icon: ShoppingBag },
+  ];
+
   const items = isAdmin ? adminNavItems : navItems;
+  const getPath = (path: string) => (path.startsWith("/admin") ? path : pathFor(path));
 
   return (
     <nav className="vertical-nav px-6">
@@ -38,12 +43,13 @@ const VerticalNav = () => {
 
       <ul className="space-y-1">
         {items.map((item) => {
-          const isActive = location.pathname === item.path;
+          const path = getPath(item.path);
+          const isActive = location.pathname === path;
           const Icon = "icon" in item ? item.icon : null;
           return (
             <li key={item.path}>
               <Link
-                to={item.path}
+                to={path}
                 className={`nav-link block flex items-center gap-2 ${
                   isActive ? "nav-link-active" : ""
                 }`}

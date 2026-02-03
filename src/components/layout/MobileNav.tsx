@@ -1,30 +1,35 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useShop } from "@/context/ShopContext";
 import { useAuth } from "@/context/AuthContext";
-
-const navItems = [
-  { label: "Sale", path: "/sale" },
-  { label: "New In", path: "/new" },
-  { label: "Clothing", path: "/clothing" },
-  { label: "Bestsellers", path: "/bestsellers" },
-  { label: "Collections", path: "/collections" },
-
-  { label: "About", path: "/about" },
-];
-
-const adminNavItems = [
-  { label: "Orders", path: "/admin/orders" },
-  { label: "Products", path: "/admin/products" },
-];
+import { useLocale } from "@/hooks/useLocale";
 
 const MobileNav = () => {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { pathFor, switchLanguage } = useLocale();
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useShop();
   const isAdmin = location.pathname.startsWith("/admin");
+
+  const navItems = [
+    { label: t("nav.sale"), path: "/sale" },
+    { label: t("nav.new"), path: "/new" },
+    { label: t("nav.clothing"), path: "/clothing" },
+    { label: t("nav.bestsellers"), path: "/bestsellers" },
+    { label: t("nav.collections"), path: "/collections" },
+    { label: t("nav.about"), path: "/about" },
+  ];
+
+  const adminNavItems = [
+    { label: t("admin.orders"), path: "/admin/orders" },
+    { label: t("admin.products"), path: "/admin/products" },
+  ];
+
   const items = isAdmin ? adminNavItems : navItems;
+  const getPath = (path: string) => (path.startsWith("/admin") ? path : pathFor(path));
 
   if (!isMobileMenuOpen) return null;
 
@@ -47,9 +52,9 @@ const MobileNav = () => {
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               <Link
-                to={item.path}
+                to={getPath(item.path)}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="font-display text-3xl tracking-wide hover:opacity-60 transition-opacity"
+                className="font-body text-3xl font-normal hover:opacity-60 transition-opacity"
               >
                 {item.label}
               </Link>
@@ -63,25 +68,45 @@ const MobileNav = () => {
           >
             {user ? (
               <Link
-                to="/profile"
+                to={pathFor("/profile")}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="font-display text-3xl tracking-wide hover:opacity-60 transition-opacity"
+                className="font-body text-3xl font-normal hover:opacity-60 transition-opacity"
               >
-                My Profile
+                {t("auth.myProfile")}
               </Link>
             ) : (
               <button
                 onClick={() => {
                   setIsMobileMenuOpen(false);
-                  navigate("/login");
+                  navigate(pathFor("/login"));
                 }}
-                className="font-display text-3xl tracking-wide hover:opacity-60 transition-opacity"
+                className="font-body text-3xl font-normal hover:opacity-60 transition-opacity"
               >
-                Sign In
+                {t("auth.signIn")}
               </button>
             )}
           </li>
         </ul>
+
+        {/* Mobile language switcher - same style as footer */}
+        <div className="mt-10 flex justify-start gap-4 font-body text-xs uppercase tracking-[0.2em] text-foreground/70">
+          <button
+            onClick={() => switchLanguage("en")}
+            className={`px-2 py-1 ${
+              i18n.language === "en" ? "opacity-100" : "opacity-60"
+            }`}
+          >
+            EN
+          </button>
+          <button
+            onClick={() => switchLanguage("ka")}
+            className={`px-2 py-1 ${
+              i18n.language === "ka" ? "opacity-100" : "opacity-60"
+            }`}
+          >
+            KA
+          </button>
+        </div>
       </nav>
     </div>
   );

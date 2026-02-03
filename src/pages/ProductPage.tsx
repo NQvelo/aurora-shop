@@ -1,21 +1,31 @@
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Heart, ChevronDown, ChevronUp } from 'lucide-react';
-import Layout from '@/components/layout/Layout';
-import ProductCard from '@/components/product/ProductCard';
-import { useProduct, useProducts } from '@/hooks/useProducts';
-import { useShop } from '@/context/ShopContext';
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { Heart, ChevronDown, ChevronUp } from "lucide-react";
+import Layout from "@/components/layout/Layout";
+import ProductCard from "@/components/product/ProductCard";
+import { useProduct, useProducts } from "@/hooks/useProducts";
+import { useShop } from "@/context/ShopContext";
+import { useLocale } from "@/hooks/useLocale";
 
 const ProductPage = () => {
   const { id } = useParams();
-  const { currency, addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useShop();
-  
-  const { data: product, isLoading: isLoadingProduct } = useProduct(id || '');
+  const { pathFor } = useLocale();
+  const {
+    currency,
+    addToCart,
+    addToWishlist,
+    removeFromWishlist,
+    isInWishlist,
+  } = useShop();
+
+  const { data: product, isLoading: isLoadingProduct } = useProduct(id || "");
   const { data: allProducts } = useProducts();
-  
+
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [expandedSection, setExpandedSection] = useState<string | null>('details');
+  const [expandedSection, setExpandedSection] = useState<string | null>(
+    "details"
+  );
 
   if (isLoadingProduct) {
     return (
@@ -23,7 +33,9 @@ const ProductPage = () => {
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-pulse flex flex-col items-center">
             <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-muted-foreground uppercase tracking-widest text-[10px]">Loading</p>
+            <p className="text-muted-foreground uppercase tracking-widest text-[10px]">
+              Loading
+            </p>
           </div>
         </div>
       </Layout>
@@ -34,7 +46,9 @@ const ProductPage = () => {
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
-          <p className="text-muted-foreground uppercase tracking-widest text-[10px]">Product not found</p>
+          <p className="text-muted-foreground uppercase tracking-widest text-[10px]">
+            Product not found
+          </p>
         </div>
       </Layout>
     );
@@ -46,7 +60,7 @@ const ProductPage = () => {
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      alert('Please select a size');
+      alert("Please select a size");
       return;
     }
     addToCart(product, selectedSize);
@@ -74,7 +88,7 @@ const ProductPage = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-            
+
             {/* Thumbnail navigation if multiple images */}
             {product.images.length > 1 && (
               <div className="absolute bottom-4 left-4 flex gap-2">
@@ -83,7 +97,7 @@ const ProductPage = () => {
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
                     className={`w-2 h-2 rounded-full transition-colors ${
-                      index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                      index === currentImageIndex ? "bg-white" : "bg-white/50"
                     }`}
                   />
                 ))}
@@ -92,23 +106,29 @@ const ProductPage = () => {
           </div>
 
           {/* Product Details */}
-          <div className="p-6 lg:p-12 lg:overflow-y-auto">
+          <div
+            className="p-6 lg:p-12 lg:overflow-y-auto"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
             {/* Breadcrumb */}
             <nav className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground mb-6">
-              <Link to="/" className="hover:text-foreground transition-colors">
-                Home
+<Link to={pathFor("/")} className="hover:text-foreground transition-colors">
+              Home
               </Link>
               <span className="mx-2">/</span>
-              <Link to="/clothing" className="hover:text-foreground transition-colors">
+              <Link
+                to={pathFor("/clothing")}
+                className="hover:text-foreground transition-colors"
+              >
                 {product.category}
               </Link>
             </nav>
 
             {/* Product Name & Price */}
-            <h1 className="font-display text-2xl md:text-3xl mb-4">
+            <h1 className="font-body text-2xl md:text-3xl mb-4 font-normal">
               {product.name}
             </h1>
-            
+
             <div className="mb-6">
               {product.onSale && product.salePrice ? (
                 <div className="flex items-center gap-3">
@@ -145,11 +165,13 @@ const ProductPage = () => {
                 {product.sizes.map((size) => (
                   <button
                     key={size.label}
-                    onClick={() => size.available && setSelectedSize(size.label)}
+                    onClick={() =>
+                      size.available && setSelectedSize(size.label)
+                    }
                     disabled={!size.available}
                     className={`size-btn ${
-                      selectedSize === size.label ? 'size-btn-selected' : ''
-                    } ${!size.available ? 'size-btn-disabled' : ''}`}
+                      selectedSize === size.label ? "size-btn-selected" : ""
+                    } ${!size.available ? "size-btn-disabled" : ""}`}
                   >
                     {size.label}
                   </button>
@@ -176,7 +198,7 @@ const ProductPage = () => {
               >
                 <Heart
                   className={`w-5 h-5 ${
-                    isInWishlist(product.id) ? 'fill-current' : ''
+                    isInWishlist(product.id) ? "fill-current" : ""
                   }`}
                 />
               </button>
@@ -187,17 +209,17 @@ const ProductPage = () => {
               {/* Product Details */}
               <div className="border-b border-border">
                 <button
-                  onClick={() => toggleSection('details')}
+                  onClick={() => toggleSection("details")}
                   className="collapsible-header w-full"
                 >
                   Product Details
-                  {expandedSection === 'details' ? (
+                  {expandedSection === "details" ? (
                     <ChevronUp className="w-4 h-4" />
                   ) : (
                     <ChevronDown className="w-4 h-4" />
                   )}
                 </button>
-                {expandedSection === 'details' && product.details && (
+                {expandedSection === "details" && product.details && (
                   <div className="pb-4">
                     <ul className="space-y-2">
                       {product.details.map((detail, index) => (
@@ -216,17 +238,17 @@ const ProductPage = () => {
               {/* Shipping & Returns */}
               <div className="border-b border-border">
                 <button
-                  onClick={() => toggleSection('shipping')}
+                  onClick={() => toggleSection("shipping")}
                   className="collapsible-header w-full"
                 >
                   Shipping & Returns
-                  {expandedSection === 'shipping' ? (
+                  {expandedSection === "shipping" ? (
                     <ChevronUp className="w-4 h-4" />
                   ) : (
                     <ChevronDown className="w-4 h-4" />
                   )}
                 </button>
-                {expandedSection === 'shipping' && (
+                {expandedSection === "shipping" && (
                   <div className="pb-4 space-y-3">
                     <p className="text-sm font-light text-muted-foreground">
                       Free worldwide shipping on orders over ₾3,500.
@@ -244,17 +266,17 @@ const ProductPage = () => {
               {/* Need Help */}
               <div className="border-b border-border">
                 <button
-                  onClick={() => toggleSection('help')}
+                  onClick={() => toggleSection("help")}
                   className="collapsible-header w-full"
                 >
                   Need Help?
-                  {expandedSection === 'help' ? (
+                  {expandedSection === "help" ? (
                     <ChevronUp className="w-4 h-4" />
                   ) : (
                     <ChevronDown className="w-4 h-4" />
                   )}
                 </button>
-                {expandedSection === 'help' && (
+                {expandedSection === "help" && (
                   <div className="pb-4 space-y-3">
                     <p className="text-sm font-light text-muted-foreground">
                       Contact our customer service team for assistance.

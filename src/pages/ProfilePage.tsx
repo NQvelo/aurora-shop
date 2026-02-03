@@ -16,6 +16,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useShop } from "@/context/ShopContext";
 import ProductCard from "@/components/product/ProductCard";
 import { supabase } from "@/lib/supabase";
+import { useLocale } from "@/hooks/useLocale";
 
 interface OrderItem {
   product_id: string;
@@ -106,7 +107,9 @@ const ProfilePage = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           {/* Header */}
           <div className="mb-12 border-b border-border pb-8">
-            <h1 className="font-display text-4xl mb-2">My Profile</h1>
+            <h1 className="font-body text-2xl md:text-3xl mb-2 font-normal">
+              My Profile
+            </h1>
             <p className="text-muted-foreground uppercase tracking-widest text-[10px]">
               Manage your account and view your saved items
             </p>

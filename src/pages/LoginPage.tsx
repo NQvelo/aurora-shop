@@ -67,7 +67,7 @@ const LoginPage = () => {
       <div className="min-h-[calc(100vh-var(--header-height))] grid md:grid-cols-2">
         {/* Left side: form */}
         <div className="flex flex-col justify-center px-8 lg:px-16 py-12 max-w-md w-full mx-auto">
-          <h1 className="font-display text-3xl mb-8 tracking-wide">
+          <h1 className="font-body text-2xl md:text-3xl mb-8 font-normal">
             {isLogin ? "Welcome Back!" : "Create your account"}
           </h1>
 

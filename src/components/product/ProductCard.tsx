@@ -1,14 +1,17 @@
-import { Link } from 'react-router-dom';
-import { Heart } from 'lucide-react';
-import { Product } from '@/types/product';
-import { useShop } from '@/context/ShopContext';
+import { Link } from "react-router-dom";
+import { Heart } from "lucide-react";
+import { Product } from "@/types/product";
+import { useShop } from "@/context/ShopContext";
+import { useLocale } from "@/hooks/useLocale";
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const { currency, addToWishlist, removeFromWishlist, isInWishlist } = useShop();
+  const { pathFor } = useLocale();
+  const { currency, addToWishlist, removeFromWishlist, isInWishlist } =
+    useShop();
 
   const formatPrice = (price: number) => {
     return `${currency.symbol}${price.toLocaleString()}`;
@@ -16,7 +19,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <div className="group">
-      <Link to={`/product/${product.id}`} className="block">
+      <Link to={pathFor(`/product/${product.id}`)} className="block">
         <div className="relative aspect-[3/4] bg-muted overflow-hidden">
           <img
             src={product.images[0]}
@@ -53,14 +56,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
           >
             <Heart
               className={`w-4 h-4 ${
-                isInWishlist(product.id) ? 'fill-current' : ''
+                isInWishlist(product.id) ? "fill-current" : ""
               }`}
             />
           </button>
 
           {/* Product info overlay */}
           <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/60 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-            <p className="text-white text-sm font-medium">{product.name}</p>
+            <p className="text-white text-sm font-normal">{product.name}</p>
             <p className="text-white/80 text-sm">
               {product.onSale && product.salePrice ? (
                 <>

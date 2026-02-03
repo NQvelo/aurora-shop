@@ -5,6 +5,14 @@
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 
+@font-face {
+  font-family: "GA Zedginidze";
+  src: url("/fonts/GA-Zedginidze-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -57,6 +65,7 @@
     /* Typography */
     --font-display: "Cormorant Garamond", serif;
     --font-body: "Inter", sans-serif;
+    --font-collections: "GA Zedginidze", "Cormorant Garamond", serif;
 
     /* Spacing */
     --nav-width: 200px;
@@ -128,7 +137,7 @@
 @layer components {
   /* Luxury button variants */
   .btn-luxury {
-    @apply inline-flex items-center justify-center px-8 py-3 text-xs font-medium uppercase tracking-[0.2em] transition-all duration-300;
+    @apply inline-flex items-center justify-center px-8 py-3 text-xs font-normal uppercase tracking-[0.2em] transition-all duration-300;
     font-family: var(--font-body);
   }
 
@@ -156,7 +165,7 @@
   }
 
   .text-luxury-caps {
-    @apply text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium;
+    @apply text-[10px] md:text-xs uppercase tracking-[0.2em] font-normal;
     font-family: var(--font-body);
   }
 
@@ -270,6 +279,16 @@
   /* Footer */
   .luxury-footer {
     @apply bg-foreground text-background py-16 px-6 lg:px-12;
+    font-family: var(--font-body);
+  }
+
+  .luxury-footer h1,
+  .luxury-footer h2,
+  .luxury-footer h3,
+  .luxury-footer h4,
+  .luxury-footer h5,
+  .luxury-footer h6 {
+    font-family: var(--font-body);
   }
 
   /* Grid layouts */
@@ -289,6 +308,20 @@
   /* Mobile menu */
   .mobile-nav {
     @apply fixed inset-0 bg-background z-50 flex flex-col p-8 pt-20;
+  }
+
+  /* Collections page specific font */
+  .collections-page {
+    font-family: var(--font-collections);
+  }
+
+  .collections-page h1,
+  .collections-page h2,
+  .collections-page h3,
+  .collections-page h4,
+  .collections-page h5,
+  .collections-page h6 {
+    font-family: var(--font-collections);
   }
 }
 

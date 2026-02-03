@@ -1,8 +1,10 @@
-import { X, Minus, Plus, Trash2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useShop } from '@/context/ShopContext';
+import { X, Minus, Plus, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useShop } from "@/context/ShopContext";
+import { useLocale } from "@/hooks/useLocale";
 
 const CartDrawer = () => {
+  const { pathFor } = useLocale();
   const {
     cart,
     isCartOpen,
@@ -31,7 +33,7 @@ const CartDrawer = () => {
       <div className="drawer-panel animate-slide-in-right">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-[11px] uppercase tracking-[0.15em] font-medium">
+          <h2 className="text-lg font-body font-normal">
             Shopping Bag ({cart.length})
           </h2>
           <button
@@ -67,7 +69,7 @@ const CartDrawer = () => {
 
                   {/* Product details */}
                   <div className="flex-1 flex flex-col">
-                    <h3 className="text-sm font-medium mb-1">
+                    <h3 className="text-sm font-normal mb-1">
                       {item.product.name}
                     </h3>
                     <p className="text-xs text-muted-foreground mb-1">
@@ -131,12 +133,12 @@ const CartDrawer = () => {
           <div className="p-6 border-t border-border">
             <div className="flex items-center justify-between mb-6">
               <span className="text-sm font-light">Subtotal</span>
-              <span className="text-sm font-medium">
+              <span className="text-sm font-normal">
                 {formatPrice(cartTotal)}
               </span>
             </div>
-            <Link 
-              to="/checkout" 
+            <Link
+              to={pathFor("/checkout")}
               onClick={() => setIsCartOpen(false)}
               className="btn-luxury-primary w-full text-center"
             >

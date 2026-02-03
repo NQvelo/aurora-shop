@@ -1,10 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Search, User, Heart, ShoppingBag, Menu, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useShop } from "@/context/ShopContext";
 import { useAuth } from "@/context/AuthContext";
+import { useLocale } from "@/hooks/useLocale";
 
 const Header = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const { pathFor } = useLocale();
   const { user, signOut } = useAuth();
   const {
     cartCount,
@@ -34,7 +38,7 @@ const Header = () => {
 
       {/* Logo */}
       <Link
-        to="/"
+        to={pathFor("/")}
         className="absolute left-1/2 transform -translate-x-1/2 lg:static lg:transform-none lg:ml-[var(--nav-width)]"
       >
         <img
@@ -48,18 +52,18 @@ const Header = () => {
       <div className="flex items-center gap-0 md:gap-1">
         {user ? (
           <Link
-            to="/profile"
+            to={pathFor("/profile")}
             className="hidden md:flex p-2 transition-colors items-center justify-center"
-            aria-label="Profile"
+            aria-label={t("auth.myProfile")}
           >
             <User className="w-5 h-5" strokeWidth={1.5} />
           </Link>
         ) : (
           <button
-            onClick={() => navigate("/login")}
-            className="hidden md:flex items-center px-3 py-2 hover:underline transition-all text-[11px] uppercase tracking-[0.2em] font-medium"
+            onClick={() => navigate(pathFor("/login"))}
+            className="hidden md:flex items-center px-3 py-2 hover:underline transition-all text-[11px] uppercase tracking-[0.2em] font-normal"
           >
-            Sign In
+            {t("auth.signIn")}
           </button>
         )}
 
@@ -70,7 +74,7 @@ const Header = () => {
         >
           <Heart className="w-5 h-5" strokeWidth={1.5} />
           {wishlist.length > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-foreground text-background text-[8px] flex items-center justify-center rounded-full font-bold">
+            <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-foreground text-background text-[8px] flex items-center justify-center rounded-full font-medium">
               {wishlist.length}
             </span>
           )}
@@ -83,7 +87,7 @@ const Header = () => {
         >
           <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
           {cartCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-foreground text-background text-[8px] flex items-center justify-center rounded-full font-bold">
+            <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-foreground text-background text-[8px] flex items-center justify-center rounded-full font-medium">
               {cartCount}
             </span>
           )}
