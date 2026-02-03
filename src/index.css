@@ -53,11 +53,11 @@
     --luxury-charcoal: 0 0% 15%;
     --luxury-gold: 43 74% 49%;
     --luxury-border: 0 0% 88%;
-    
+
     /* Typography */
     --font-display: "Cormorant Garamond", serif;
     --font-body: "Inter", sans-serif;
-    
+
     /* Spacing */
     --nav-width: 200px;
     --top-bar-height: 0px;
@@ -114,7 +114,12 @@
     letter-spacing: 0.01em;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     font-weight: 400;
   }
@@ -162,7 +167,7 @@
 
   /* Navigation link */
   .nav-link {
-    @apply text-[11px] uppercase tracking-[0.15em] font-normal text-foreground/70 hover:text-foreground transition-colors duration-300 py-2;
+    @apply text-[13px] uppercase tracking-[0.15em] font-normal text-foreground/70 hover:text-foreground transition-colors duration-300 py-2;
     font-family: var(--font-body);
   }
 

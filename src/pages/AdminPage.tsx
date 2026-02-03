@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { format } from "date-fns";
 import {
@@ -10,8 +11,6 @@ import {
   Upload,
   X,
   Save,
-  ShoppingBag,
-  Package,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
@@ -24,6 +23,7 @@ interface OrderItem {
   quantity: number;
   size: string;
   price: number;
+  image?: string;
 }
 
 interface Order {
@@ -365,59 +365,19 @@ const AdminPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Minimal Admin Header */}
-      <header className="w-full py-6 px-6 border-b border-border flex justify-center bg-background sticky top-0 z-50">
-        <Link to="/admin/orders">
-          <img
-            src={`${import.meta.env.BASE_URL}logo.png`}
-            alt="Aurora"
-            className="h-12 md:h-14 w-auto object-contain"
-          />
-        </Link>
-      </header>
-
+    <Layout>
       <div className="py-12 md:py-16 px-6 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-border pb-8 gap-6">
-            <div>
-              <h1 className="font-display text-4xl tracking-wide mb-2 uppercase italic">
-                Admin Dashboard
-              </h1>
-              <div className="flex gap-8 mt-4">
-                <button
-                  onClick={() => setActiveTab("orders")}
-                  className={`flex items-center gap-2 text-[10px] uppercase tracking-widest pb-2 border-b-2 transition-all ${
-                    activeTab === "orders"
-                      ? "border-primary text-primary"
-                      : "border-transparent text-muted-foreground"
-                  }`}
-                >
-                  <Package className="w-3 h-3" /> Orders
-                </button>
-                <button
-                  onClick={() => setActiveTab("products")}
-                  className={`flex items-center gap-2 text-[10px] uppercase tracking-widest pb-2 border-b-2 transition-all ${
-                    activeTab === "products"
-                      ? "border-primary text-primary"
-                      : "border-transparent text-muted-foreground"
-                  }`}
-                >
-                  <ShoppingBag className="w-3 h-3" /> Products
-                </button>
-              </div>
+          {activeTab === "products" && !isAddingProduct && !editingProduct && (
+            <div className="flex justify-end mb-8">
+              <button
+                onClick={() => setIsAddingProduct(true)}
+                className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-[10px] uppercase tracking-widest font-bold hover:opacity-90 transition-opacity"
+              >
+                <Plus className="w-3 h-3" /> Add Product
+              </button>
             </div>
-            {activeTab === "products" &&
-              !isAddingProduct &&
-              !editingProduct && (
-                <button
-                  onClick={() => setIsAddingProduct(true)}
-                  className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-[10px] uppercase tracking-widest font-bold hover:opacity-90 transition-opacity"
-                >
-                  <Plus className="w-3 h-3" /> Add Product
-                </button>
-              )}
-          </header>
+          )}
 
           {activeTab === "orders" ? (
             <div className="space-y-4">
@@ -510,25 +470,44 @@ const AdminPage = () => {
                               Purchased Items
                             </p>
                             <ul className="space-y-3">
-                              {order.items.map((item, i) => (
-                                <li
-                                  key={i}
-                                  className="flex justify-between items-center text-sm"
-                                >
-                                  <span className="font-medium">
-                                    {item.name}{" "}
-                                    <span className="text-muted-foreground font-light ml-2">
-                                      Size: {item.size} × {item.quantity}
+                              {order.items.map((item, i) => {
+                                const productImage =
+                                  item.image ||
+                                  products.find((p) => p.id === item.product_id)
+                                    ?.images?.[0];
+                                return (
+                                  <li
+                                    key={i}
+                                    className="flex gap-3 justify-between items-center text-sm"
+                                  >
+                                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                                      {productImage ? (
+                                        <img
+                                          src={productImage}
+                                          alt={item.name}
+                                          className="w-12 h-12 object-cover shrink-0 border border-border"
+                                        />
+                                      ) : (
+                                        <div className="w-12 h-12 shrink-0 border border-border bg-muted flex items-center justify-center text-[10px] text-muted-foreground">
+                                          —
+                                        </div>
+                                      )}
+                                      <span className="font-medium min-w-0">
+                                        {item.name}{" "}
+                                        <span className="text-muted-foreground font-light ml-1">
+                                          Size: {item.size} × {item.quantity}
+                                        </span>
+                                      </span>
+                                    </div>
+                                    <span className="font-mono text-xs shrink-0">
+                                      ₾
+                                      {(
+                                        item.price * item.quantity
+                                      ).toLocaleString()}
                                     </span>
-                                  </span>
-                                  <span className="font-mono text-xs">
-                                    ₾
-                                    {(
-                                      item.price * item.quantity
-                                    ).toLocaleString()}
-                                  </span>
-                                </li>
-                              ))}
+                                  </li>
+                                );
+                              })}
                             </ul>
                             <div className="mt-6 pt-4 border-t border-border/50 flex justify-between items-center">
                               <span className="text-[11px] uppercase tracking-[0.2em] font-bold">
@@ -904,7 +883,7 @@ const AdminPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

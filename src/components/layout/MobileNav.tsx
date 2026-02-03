@@ -1,21 +1,29 @@
-import { Link } from 'react-router-dom';
-import { X } from 'lucide-react';
-import { useShop } from '@/context/ShopContext';
-import { useAuth } from '@/context/AuthContext';
+import { Link, useLocation } from "react-router-dom";
+import { X } from "lucide-react";
+import { useShop } from "@/context/ShopContext";
+import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
-  { label: 'Sale', path: '/sale' },
-  { label: 'New In', path: '/new' },
-  { label: 'Clothing', path: '/clothing' },
-  { label: 'Bestsellers', path: '/bestsellers' },
-  { label: 'Collections', path: '/collections' },
-  { label: 'Stockists', path: '/stockists' },
-  { label: 'About', path: '/about' },
+  { label: "Sale", path: "/sale" },
+  { label: "New In", path: "/new" },
+  { label: "Clothing", path: "/clothing" },
+  { label: "Bestsellers", path: "/bestsellers" },
+  { label: "Collections", path: "/collections" },
+  { label: "Stockists", path: "/stockists" },
+  { label: "About", path: "/about" },
+];
+
+const adminNavItems = [
+  { label: "Orders", path: "/admin/orders" },
+  { label: "Products", path: "/admin/products" },
 ];
 
 const MobileNav = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const { isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginOpen } = useShop();
+  const isAdmin = location.pathname.startsWith("/admin");
+  const items = isAdmin ? adminNavItems : navItems;
 
   if (!isMobileMenuOpen) return null;
 
@@ -31,8 +39,8 @@ const MobileNav = () => {
 
       <nav className="flex-1 flex flex-col justify-center">
         <ul className="space-y-6">
-          {navItems.map((item, index) => (
-            <li 
+          {items.map((item, index) => (
+            <li
               key={item.path}
               className="animate-slide-up"
               style={{ animationDelay: `${index * 0.05}s` }}
@@ -46,11 +54,11 @@ const MobileNav = () => {
               </Link>
             </li>
           ))}
-          
+
           {/* Profile / Sign In */}
-          <li 
+          <li
             className="animate-slide-up"
-            style={{ animationDelay: `${navItems.length * 0.05}s` }}
+            style={{ animationDelay: `${items.length * 0.05}s` }}
           >
             {user ? (
               <Link

@@ -1,44 +1,60 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Search } from 'lucide-react';
-import { useShop } from '@/context/ShopContext';
+import { Link, useLocation } from "react-router-dom";
+import { Search, Package, ShoppingBag } from "lucide-react";
+import { useShop } from "@/context/ShopContext";
 
 const navItems = [
-  { label: 'Sale', path: '/sale' },
-  { label: 'New In', path: '/new' },
-  { label: 'Clothing', path: '/clothing' },
-  { label: 'Bestsellers', path: '/bestsellers' },
-  { label: 'Collections', path: '/collections' },
-  { label: 'Stockists', path: '/stockists' },
-  { label: 'About', path: '/about' },
+  { label: "Sale", path: "/sale" },
+  { label: "New In", path: "/new" },
+  { label: "Clothing", path: "/clothing" },
+  { label: "Bestsellers", path: "/bestsellers" },
+  { label: "Collections", path: "/collections" },
+  { label: "Stockists", path: "/stockists" },
+  { label: "About", path: "/about" },
+];
+
+const adminNavItems = [
+  { label: "Orders", path: "/admin/orders", icon: Package },
+  { label: "Products", path: "/admin/products", icon: ShoppingBag },
 ];
 
 const VerticalNav = () => {
   const location = useLocation();
   const { setIsSearchOpen } = useShop();
+  const isAdmin = location.pathname.startsWith("/admin");
+  const items = isAdmin ? adminNavItems : navItems;
 
   return (
     <nav className="vertical-nav px-6">
-      <button
-        onClick={() => setIsSearchOpen(true)}
-        className="mb-8 p-2 transition-colors duration-200 self-start flex items-center justify-center"
-        aria-label="Search"
-      >
-        <Search className="w-5 h-5" strokeWidth={1.5} />
-      </button>
-      
+      {!isAdmin && (
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className="mb-8 p-2 transition-colors duration-200 self-start flex items-center justify-center"
+          aria-label="Search"
+        >
+          <Search className="w-5 h-5" strokeWidth={1.5} />
+        </button>
+      )}
+
       <ul className="space-y-1">
-        {navItems.map((item) => (
-          <li key={item.path}>
-            <Link
-              to={item.path}
-              className={`nav-link block ${
-                location.pathname === item.path ? 'nav-link-active' : ''
-              }`}
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
+        {items.map((item) => {
+          const isActive = location.pathname === item.path;
+          const Icon = "icon" in item ? item.icon : null;
+          return (
+            <li key={item.path}>
+              <Link
+                to={item.path}
+                className={`nav-link block flex items-center gap-2 ${
+                  isActive ? "nav-link-active" : ""
+                }`}
+              >
+                {Icon && (
+                  <Icon className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+                )}
+                {item.label}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
