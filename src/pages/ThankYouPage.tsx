@@ -51,8 +51,8 @@ const ThankYouPage = () => {
                 Thank you for your order
               </h1>
               <p className="text-sm text-muted-foreground mb-10">
-                Your order has been received. The payment page has opened in
-                another tab—complete payment there. Your order summary is below.
+                Your order has been received. Review the items below, then
+                proceed to complete payment.
               </p>
 
               <div className="bg-muted/30 border border-border p-6 md:p-8 text-left">
@@ -97,7 +97,7 @@ const ThankYouPage = () => {
                   Open payment page again
                 </button>
                 <p className="text-[10px] text-muted-foreground">
-                  Use this if the payment tab was blocked or closed.
+                  Payment will open in a new tab. This page will stay here.
                 </p>
                 <Link
                   to={pathFor("/")}

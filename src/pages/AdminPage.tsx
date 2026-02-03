@@ -43,6 +43,46 @@ interface Order {
   delivered_at?: string | null;
 }
 
+/** Parse stored shipping address (e.g. "Street, № 12, 0108, Tbilisi") into labeled parts */
+function parseShippingAddress(raw: string): {
+  street: string;
+  houseNumber: string;
+  postCode: string;
+  city: string;
+  floor: string;
+  raw: string;
+} {
+  const trimmed = (raw || "").trim();
+  if (!trimmed)
+    return {
+      street: "",
+      houseNumber: "",
+      postCode: "",
+      city: "",
+      floor: "",
+      raw: trimmed,
+    };
+  const parts = trimmed
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
+  const housePart = parts.find((p) => /^№\s*.+/.test(p));
+  const houseNumber = housePart ? housePart.replace(/^№\s*/, "").trim() : "";
+  const postCode = parts.find((p) => /^\d+$/.test(p)) ?? "";
+  const floorPart = parts.find((p) => /^Floor\s*.+/i.test(p));
+  const floor = floorPart ? floorPart.replace(/^Floor\s*/i, "").trim() : "";
+  const city = parts.length > 1 ? parts[parts.length - 1] : "";
+  const rest = parts.filter(
+    (p, i) =>
+      i < parts.length - 1 &&
+      !/^№\s*/.test(p) &&
+      !/^\d+$/.test(p) &&
+      !/^Floor\s*.+/i.test(p)
+  );
+  const street = rest.join(", ");
+  return { street, houseNumber, postCode, city, floor, raw: trimmed };
+}
+
 interface HomeSettings {
   left_title: string;
   left_subtitle: string;
@@ -709,14 +749,78 @@ const AdminPage = () => {
                                   {order.customer_phone}
                                 </p>
                               </div>
-                              <div>
-                                <p className="text-muted-foreground uppercase tracking-widest text-[9px] mb-1">
-                                  Address
-                                </p>
-                                <p className="font-light leading-relaxed">
-                                  {order.shipping_address}
-                                </p>
-                              </div>
+                              {(() => {
+                                const addr = parseShippingAddress(
+                                  order.shipping_address
+                                );
+                                const hasStructured =
+                                  addr.street ||
+                                  addr.houseNumber ||
+                                  addr.postCode ||
+                                  addr.city ||
+                                  addr.floor;
+                                return hasStructured ? (
+                                  <div className="space-y-3">
+                                    <div>
+                                      <p className="text-muted-foreground uppercase tracking-widest text-[9px] mb-1">
+                                        Street / Address
+                                      </p>
+                                      <p className="font-light leading-relaxed">
+                                        {addr.street || "—"}
+                                      </p>
+                                    </div>
+                                    {addr.houseNumber && (
+                                      <div>
+                                        <p className="text-muted-foreground uppercase tracking-widest text-[9px] mb-1">
+                                          House number
+                                        </p>
+                                        <p className="font-medium">
+                                          {addr.houseNumber}
+                                        </p>
+                                      </div>
+                                    )}
+                                    {addr.floor && (
+                                      <div>
+                                        <p className="text-muted-foreground uppercase tracking-widest text-[9px] mb-1">
+                                          Floor
+                                        </p>
+                                        <p className="font-medium">
+                                          {addr.floor}
+                                        </p>
+                                      </div>
+                                    )}
+                                    {addr.postCode && (
+                                      <div>
+                                        <p className="text-muted-foreground uppercase tracking-widest text-[9px] mb-1">
+                                          Post code
+                                        </p>
+                                        <p className="font-medium">
+                                          {addr.postCode}
+                                        </p>
+                                      </div>
+                                    )}
+                                    {addr.city && (
+                                      <div>
+                                        <p className="text-muted-foreground uppercase tracking-widest text-[9px] mb-1">
+                                          City
+                                        </p>
+                                        <p className="font-medium">
+                                          {addr.city}
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <p className="text-muted-foreground uppercase tracking-widest text-[9px] mb-1">
+                                      Street / Address
+                                    </p>
+                                    <p className="font-light leading-relaxed">
+                                      {addr.raw || "—"}
+                                    </p>
+                                  </div>
+                                );
+                              })()}
                               <div className="pt-2">
                                 <p className="text-muted-foreground uppercase tracking-widest text-[9px] mb-1">
                                   Full Date

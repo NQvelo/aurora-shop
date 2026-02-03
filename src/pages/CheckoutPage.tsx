@@ -117,8 +117,12 @@ const CheckoutPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const PAYMENT_URL = "https://egreve.bog.ge/teklaqvelidze";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Open payment in new tab immediately (same tick as user click) so popup isn't blocked
+    window.open(PAYMENT_URL, "_blank", "noopener,noreferrer");
     setIsSubmitting(true);
 
     try {
@@ -172,13 +176,8 @@ const CheckoutPage = () => {
           .catch((err) => console.error("Error triggering notification:", err));
       }
 
-      // Open payment in new tab, then show thank you page in this tab
-      window.open(
-        "https://egreve.bog.ge/teklaqvelidze",
-        "_blank",
-        "noopener,noreferrer"
-      );
       clearCart();
+      // Show thank you page in this tab (payment already opened in new tab above)
       navigate(pathFor("/thank-you"), {
         state: {
           orderId: orderData.id,
