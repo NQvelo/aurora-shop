@@ -65,7 +65,17 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
 
   const [currency, setCurrencyState] = useState<Currency>(() => {
     const saved = localStorage.getItem('currency');
-    return saved ? JSON.parse(saved) : currencies[0];
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as Currency;
+        if (parsed.code === 'GEL') {
+          return parsed;
+        }
+      } catch {
+        // ignore invalid saved currency
+      }
+    }
+    return currencies[0];
   });
 
   const [country, setCountryState] = useState<Country>(() => {

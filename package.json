@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "type": "module",
-  "homepage": "https://nqvelo.github.io/aurora-shop/",
+  "homepage": "http://aurora.com.ge/",
   "scripts": {
     "dev": "vite",
     "build": "vite build && npm run copy404",

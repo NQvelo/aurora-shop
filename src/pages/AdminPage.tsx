@@ -1015,6 +1015,8 @@ const AdminPage = () => {
                           </label>
                           <input
                             type="number"
+                            step="0.01"
+                            min="0"
                             required
                             value={productForm.price}
                             onChange={(e) =>
@@ -1032,6 +1034,8 @@ const AdminPage = () => {
                           </label>
                           <input
                             type="number"
+                            step="0.01"
+                            min="0"
                             value={productForm.salePrice}
                             onChange={(e) =>
                               setProductForm({

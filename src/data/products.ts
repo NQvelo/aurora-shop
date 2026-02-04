@@ -186,7 +186,7 @@ export const products: Product[] = [
     id: '8',
     name: 'Wool Tailored Trousers',
     price: 620,
-    currency: 'EUR',
+    currency: 'GEL',
     images: [product2],
     sizes: [
       { label: 'XS', available: true },
@@ -210,9 +210,6 @@ export const products: Product[] = [
 
 export const currencies = [
   { code: 'GEL', symbol: '₾', name: 'Georgian Lari' },
-  { code: 'EUR', symbol: '€', name: 'Euro' },
-  { code: 'USD', symbol: '$', name: 'US Dollar' },
-  { code: 'GBP', symbol: '£', name: 'British Pound' },
 ];
 
 export const countries = [
