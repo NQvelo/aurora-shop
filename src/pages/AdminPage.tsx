@@ -753,13 +753,41 @@ const AdminPage = () => {
                                 );
                               })}
                             </ul>
-                            <div className="mt-6 pt-4 border-t border-border/50 flex justify-between items-center">
-                              <span className="text-[11px] uppercase tracking-[0.2em] font-bold">
-                                Total Amount
-                              </span>
-                              <span className="text-lg font-display">
-                                ₾{order.total_amount.toLocaleString()}
-                              </span>
+                            <div className="mt-6 pt-4 border-t border-border/50 space-y-2">
+                              {(() => {
+                                const itemsSubtotal = order.items.reduce(
+                                  (sum, item) => sum + item.price * item.quantity,
+                                  0
+                                );
+                                const deliveryCost =
+                                  order.total_amount - itemsSubtotal;
+
+                                return (
+                                  <>
+                                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                                      <span>Subtotal</span>
+                                      <span>₾{itemsSubtotal.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                                      <span>Delivery</span>
+                                      <span>
+                                        ₾
+                                        {deliveryCost > 0
+                                          ? deliveryCost.toLocaleString()
+                                          : "0"}
+                                      </span>
+                                    </div>
+                                  </>
+                                );
+                              })()}
+                              <div className="flex justify-between items-center pt-2 border-t border-border/10">
+                                <span className="text-[11px] uppercase tracking-[0.2em] font-bold">
+                                  Total Amount
+                                </span>
+                                <span className="text-lg font-display">
+                                  ₾{order.total_amount.toLocaleString()}
+                                </span>
+                              </div>
                             </div>
                           </div>
                           <div className="p-6 bg-muted/5">

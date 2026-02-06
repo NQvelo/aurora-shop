@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/lib/supabase";
-import heroAW from "@/assets/hero-aw25-1.jpg";
+import aurora from "@/assets/aurora.jpg";
 import { useLocale } from "@/hooks/useLocale";
 
 const LoginPage = () => {
@@ -142,7 +142,7 @@ const LoginPage = () => {
         {/* Right side: hero image */}
         <div className="hidden md:block relative">
           <img
-            src={heroAW}
+            src={aurora}
             alt="Aurora campaign"
             className="absolute inset-0 w-full h-full object-cover"
           />

@@ -417,7 +417,12 @@ const CheckoutPage = () => {
                 </div>
                 <div className="flex justify-between font-light text-sm">
                    <span>{t("checkout.shipping")}</span>
-                   <span>{formData.city ? formatPrice(deliveryCost) : "--"}</span>
+                   <span
+                     key={deliveryCost}
+                     className="animate-in fade-in slide-in-from-bottom-1 duration-300"
+                   >
+                     {formData.city ? formatPrice(deliveryCost) : "--"}
+                   </span>
                 </div>
                 <div className="flex justify-between font-normal pt-2 border-t border-border/50">
                   <span className="text-[11px] uppercase tracking-widest">
