@@ -253,6 +253,23 @@ curl -X POST \
 
 ## Troubleshooting
 
+### "Shutdown" / "EarlyDrop" in function logs
+
+If you see **event_type: Shutdown**, **reason: EarlyDrop** in the Edge Function logs, the function was stopped because the **client (browser) disconnected** before the function finished—usually when the user was sent to the thank-you page and the notification request was aborted.
+
+**What we did:** Checkout now **waits** for the notification (up to 8 seconds) before navigating to the thank-you page, so the request can complete and emails are sent.
+
+**Optional (no client dependency):** You can trigger the notification from the **database** instead of the client, so it never gets aborted:
+
+1. Supabase Dashboard → **Database** → **Webhooks** → **Create a new webhook**.
+2. **Table:** `orders`, **Events:** Insert.
+3. **URL:** `https://YOUR_PROJECT_REF.supabase.co/functions/v1/send-order-notification`  
+   **Where to find YOUR_PROJECT_REF:** Open your [Supabase Dashboard](https://supabase.com/dashboard), select your project, then check the browser URL — it looks like `.../project/XXXXXXXXXX`. That `XXXXXXXXXX` is your project ref. You can also go to **Project Settings** → **General** and copy the **Reference ID**.
+4. **HTTP Headers:** Add `Authorization: Bearer YOUR_ANON_KEY` (or use the service role key if you prefer).
+5. Save. The function accepts the webhook payload (it detects `type: 'INSERT'`, `table: 'orders'`, `record: {...}` and sends the same admin + customer emails).
+
+If you use the webhook, you can remove the client-side `invoke` in `CheckoutPage.tsx` and navigate immediately after inserting the order.
+
 ### Emails Not Sending
 
 1. **Check Resend API Key:**

@@ -15,6 +15,8 @@ export interface Product {
   salePrice?: number;
   /** If false, product page does not show size selector; add-to-cart uses "One Size" */
   hasSizes?: boolean;
+  /** Estimated delivery time in days. Shown on product page and checkout. */
+  deliveryDays?: number | null;
 }
 
 export interface Size {

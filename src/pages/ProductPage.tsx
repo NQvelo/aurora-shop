@@ -6,10 +6,12 @@ import ProductCard from "@/components/product/ProductCard";
 import { useProduct, useProducts } from "@/hooks/useProducts";
 import { useShop } from "@/context/ShopContext";
 import { useLocale } from "@/hooks/useLocale";
+import { useTranslation } from "react-i18next";
 
 const ProductPage = () => {
   const { id } = useParams();
   const { pathFor } = useLocale();
+  const { t } = useTranslation();
   const {
     currency,
     addToCart,
@@ -24,7 +26,7 @@ const ProductPage = () => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [expandedSection, setExpandedSection] = useState<string | null>(
-    "details"
+    "details",
   );
 
   if (isLoadingProduct) {
@@ -219,34 +221,33 @@ const ProductPage = () => {
 
             {/* Size Selection */}
             {product.hasSizes !== false && product.sizes?.length > 0 ? (
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[11px] uppercase tracking-[0.15em]">
-                      Select Size
-                    </span>
-                    <button className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground hover:text-foreground underline transition-colors">
-                      Size Guide
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {product.sizes.map((size) => (
-                      <button
-                        key={size.label}
-                        onClick={() =>
-                          size.available && setSelectedSize(size.label)
-                        }
-                        disabled={!size.available}
-                        className={`size-btn ${
-                          selectedSize === size.label ? "size-btn-selected" : ""
-                        } ${!size.available ? "size-btn-disabled" : ""}`}
-                      >
-                        {size.label}
-                      </button>
-                    ))}
-                  </div>
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[11px] uppercase tracking-[0.15em]">
+                    Select Size
+                  </span>
+                  <button className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground hover:text-foreground underline transition-colors">
+                    Size Guide
+                  </button>
                 </div>
-              ) : null
-            }
+                <div className="flex flex-wrap gap-2">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size.label}
+                      onClick={() =>
+                        size.available && setSelectedSize(size.label)
+                      }
+                      disabled={!size.available}
+                      className={`size-btn ${
+                        selectedSize === size.label ? "size-btn-selected" : ""
+                      } ${!size.available ? "size-btn-disabled" : ""}`}
+                    >
+                      {size.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
 
             {/* Actions */}
             <div className="flex gap-3 mb-8 mt-6">
@@ -272,37 +273,46 @@ const ProductPage = () => {
                 />
               </button>
             </div>
+            {product.deliveryDays != null && product.deliveryDays > 0 && (
+              <p className="text-sm text-muted-foreground font-bold mt-2 mb-8">
+                {t("delivery.upToBusinessDays", {
+                  count: product.deliveryDays,
+                })}
+              </p>
+            )}
 
             {/* Collapsible Sections */}
             <div className="border-t border-border">
-              {/* Product Details */}
-              <div className="border-b border-border">
-                <button
-                  onClick={() => toggleSection("details")}
-                  className="collapsible-header w-full"
-                >
-                  Product Details
-                  {expandedSection === "details" ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
+              {/* Product Details - collapsible, expanded by default */}
+              {product.details && product.details.length > 0 && (
+                <div className="border-b border-border">
+                  <button
+                    onClick={() => toggleSection("details")}
+                    className="collapsible-header w-full"
+                  >
+                    Product Details
+                    {expandedSection === "details" ? (
+                      <ChevronUp className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </button>
+                  {expandedSection === "details" && (
+                    <div className="pb-4">
+                      <ul className="space-y-2">
+                        {product.details.map((detail, index) => (
+                          <li
+                            key={index}
+                            className="text-sm font-light text-muted-foreground"
+                          >
+                            • {detail}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
-                </button>
-                {expandedSection === "details" && product.details && (
-                  <div className="pb-4">
-                    <ul className="space-y-2">
-                      {product.details.map((detail, index) => (
-                        <li
-                          key={index}
-                          className="text-sm font-light text-muted-foreground"
-                        >
-                          • {detail}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Shipping & Returns */}
               <div className="border-b border-border">
@@ -319,12 +329,6 @@ const ProductPage = () => {
                 </button>
                 {expandedSection === "shipping" && (
                   <div className="pb-4 space-y-3">
-                    <p className="text-sm font-light text-muted-foreground">
-                      Free worldwide shipping on orders over ₾3,500.
-                    </p>
-                    <p className="text-sm font-light text-muted-foreground">
-                      Standard delivery: 3-5 business days.
-                    </p>
                     <p className="text-sm font-light text-muted-foreground">
                       Free returns within 14 days of delivery.
                     </p>
@@ -351,10 +355,7 @@ const ProductPage = () => {
                       Contact our customer service team for assistance.
                     </p>
                     <p className="text-sm font-light text-muted-foreground">
-                      Email: support@yourbrand.com
-                    </p>
-                    <p className="text-sm font-light text-muted-foreground">
-                      Phone: +44 20 1234 5678
+                      Email: teklaqvelidze@gmail.com
                     </p>
                   </div>
                 )}

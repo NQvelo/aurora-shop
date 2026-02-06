@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import CategoryPage from "./pages/CategoryPage";
 import ProductPage from "./pages/ProductPage";
 import AboutPage from "./pages/AboutPage";
+import TermsPage from "./pages/TermsPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -85,6 +86,7 @@ const App = () => (
                 />
                 <Route path="stockists" element={<AboutPage />} />
                 <Route path="about" element={<AboutPage />} />
+                <Route path="terms" element={<TermsPage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="product/:id" element={<ProductPage />} />

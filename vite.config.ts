@@ -14,14 +14,13 @@ export default defineConfig(({ mode }) => {
       ? [require("lovable-tagger").componentTagger()]
       : [];
 
-  // GitHub Pages base: CI sets PUBLIC_PATH; else use homepage path for production
-  const baseFromHomepage =
-    pkg.homepage && typeof pkg.homepage === "string"
-      ? new URL(pkg.homepage).pathname
-      : "/";
-  const base =
-    process.env.PUBLIC_PATH ||
-    (mode === "production" ? baseFromHomepage : "/");
+  /**
+   * ✅ Custom domain (aurora.com.ge) fix:
+   * Always use "/" as base in production so assets load from:
+   * https://aurora.com.ge/assets/...
+   * and NOT from /<repo>/assets/...
+   */
+  const base = "/";
 
   return {
     base,
@@ -33,18 +32,32 @@ export default defineConfig(({ mode }) => {
         overlay: false,
       },
     },
+
     plugins: [react(), ...devOnlyPlugins],
+
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
     },
+
     build: {
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: ["react", "react-dom", "react-router-dom", "@supabase/supabase-js"],
-            ui: ["@radix-ui/react-accordion", "@radix-ui/react-alert-dialog", "@radix-ui/react-avatar", "@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu"],
+            vendor: [
+              "react",
+              "react-dom",
+              "react-router-dom",
+              "@supabase/supabase-js",
+            ],
+            ui: [
+              "@radix-ui/react-accordion",
+              "@radix-ui/react-alert-dialog",
+              "@radix-ui/react-avatar",
+              "@radix-ui/react-dialog",
+              "@radix-ui/react-dropdown-menu",
+            ],
           },
         },
       },

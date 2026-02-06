@@ -5,6 +5,7 @@ import { useShop } from "@/context/ShopContext";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useLocale } from "@/hooks/useLocale";
+import { useTranslation } from "react-i18next";
 import { generateOrderNumber } from "@/lib/utils";
 
 // All cities/municipalities in Georgia (country) – self-governing cities + municipalities
@@ -80,6 +81,7 @@ const CheckoutPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { pathFor } = useLocale();
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -89,9 +91,22 @@ const CheckoutPage = () => {
     houseNumber: "",
     postCode: "",
     city: "",
+    termsAccepted: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const deliveryDays =
+    cart.length === 0
+      ? null
+      : Math.max(
+          ...cart.map((item) => item.product.deliveryDays ?? 0),
+          0
+        );
+  const hasDeliveryEstimate = deliveryDays != null && deliveryDays > 0;
+  
+  const deliveryCost = formData.city === "Tbilisi" ? 5 : (formData.city ? 10 : 0);
+  const totalAmount = cartTotal + deliveryCost;
 
   useEffect(() => {
     if (user) {
@@ -161,7 +176,7 @@ const CheckoutPage = () => {
             customer_email: formData.email,
             customer_phone: formData.phone,
             shipping_address: shippingAddress,
-            total_amount: cartTotal,
+            total_amount: totalAmount,
             status: "pending",
             items: orderItems,
             order_number: orderNumber,
@@ -177,16 +192,17 @@ const CheckoutPage = () => {
       if (orderError) throw orderError;
       if (!orderData) throw new Error("Failed to create order");
 
-      // Notify Admin via Supabase Edge Function
+      // Notify admin + customer via Edge Function. Wait briefly so the request isn't aborted when we navigate (avoids "EarlyDrop" shutdown in logs).
       if (orderData) {
-        supabase.functions
-          .invoke("send-order-notification", {
-            body: {
-              type: "new_order",
-              orderData: orderData,
-            },
-          })
-          .catch((err) => console.error("Error triggering notification:", err));
+        const notify = supabase.functions.invoke("send-order-notification", {
+          body: { type: "new_order", orderData },
+        });
+        const timeout = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("notification_timeout")), 8000)
+        );
+        await Promise.race([notify, timeout]).catch((err) =>
+          console.error("Notification (non-blocking):", err?.message ?? err)
+        );
       }
 
       clearCart();
@@ -196,7 +212,9 @@ const CheckoutPage = () => {
           orderId: orderData.order_number || orderData.id,
           orderUuid: orderData.id,
           items: orderItems,
-          total: cartTotal,
+          total: totalAmount,
+          subtotal: cartTotal,
+          shipping: deliveryCost,
           currencySymbol: currency.symbol,
         },
       });
@@ -224,8 +242,8 @@ const CheckoutPage = () => {
           </h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Checkout Form */}
-            <div>
+            {/* Checkout Form — second on mobile, first column on lg */}
+            <div className="order-2 lg:order-1">
               <h2 className="text-[11px] uppercase tracking-[0.15em] mb-6 font-normal">
                 Shipping Information
               </h2>
@@ -330,6 +348,34 @@ const CheckoutPage = () => {
                     ))}
                   </select>
                 </div>
+
+                <div className="flex items-start space-x-2 mt-4">
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    name="termsAccepted"
+                    checked={formData.termsAccepted}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        termsAccepted: e.target.checked,
+                      }))
+                    }
+                    required
+                    className="mt-1"
+                  />
+                  <label htmlFor="terms" className="text-xs text-muted-foreground leading-snug">
+                    {t("checkout.agreeTo")}{" "}
+                    <a
+                      href={pathFor("/terms")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-foreground transition-colors"
+                    >
+                      {t("checkout.termsLink")}
+                    </a>
+                  </label>
+                </div>
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -340,8 +386,8 @@ const CheckoutPage = () => {
               </form>
             </div>
 
-            {/* Order Summary */}
-            <div className="bg-muted/30 p-8">
+            {/* Order Summary — first on mobile, second column on lg */}
+            <div className="order-1 lg:order-2 bg-muted/30 p-8">
               <h2 className="text-[11px] uppercase tracking-[0.15em] mb-6 font-normal text-center">
                 Order Summary
               </h2>
@@ -364,12 +410,34 @@ const CheckoutPage = () => {
                   </div>
                 ))}
               </div>
-              <div className="border-t border-border pt-4 flex justify-between font-normal">
-                <span className="text-[11px] uppercase tracking-widest">
-                  Total
-                </span>
-                <span>{formatPrice(cartTotal)}</span>
+              <div className="border-t border-border pt-4 space-y-2">
+                <div className="flex justify-between font-light text-sm">
+                   <span>{t("checkout.subtotal")}</span>
+                   <span>{formatPrice(cartTotal)}</span>
+                </div>
+                <div className="flex justify-between font-light text-sm">
+                   <span>{t("checkout.shipping")}</span>
+                   <span>{formData.city ? formatPrice(deliveryCost) : "--"}</span>
+                </div>
+                <div className="flex justify-between font-normal pt-2 border-t border-border/50">
+                  <span className="text-[11px] uppercase tracking-widest">
+                    {t("checkout.total")}
+                  </span>
+                  <span>{formatPrice(totalAmount)}</span>
+                </div>
               </div>
+              {hasDeliveryEstimate && (
+                <div className="border-t border-border/50 pt-4 mt-4">
+                  <p className="text-sm font-bold text-muted-foreground">
+                    {t("delivery.upToBusinessDays", { count: deliveryDays })}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    {cart.length === 1
+                      ? t("delivery.oneProduct")
+                      : t("delivery.multipleProductsMax")}
+                  </p>
+              </div>
+              )}
               <p className="text-[10px] text-muted-foreground mt-8 text-center leading-relaxed">
                 By clicking "Complete Order", you will be redirected to our
                 secure payment page to finish your transaction.

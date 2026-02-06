@@ -22,6 +22,7 @@ export const useProducts = () => {
         onSale: item.on_sale,
         salePrice: item.sale_price,
         hasSizes: item.has_sizes !== false,
+        deliveryDays: item.delivery_days != null ? Number(item.delivery_days) : null,
       })) as Product[];
     },
   });
@@ -46,6 +47,7 @@ export const useProduct = (id: string) => {
         onSale: data.on_sale,
         salePrice: data.sale_price,
         hasSizes: data.has_sizes !== false,
+        deliveryDays: data.delivery_days != null ? Number(data.delivery_days) : null,
       } as Product;
     },
     enabled: !!id,

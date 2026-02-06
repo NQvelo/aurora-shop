@@ -2,6 +2,7 @@ import { useLocation, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { useShop } from "@/context/ShopContext";
 import { useLocale } from "@/hooks/useLocale";
+import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 
 export interface ThankYouOrderItem {
@@ -16,6 +17,8 @@ export interface ThankYouLocationState {
   orderId: string;
   items: ThankYouOrderItem[];
   total: number;
+  subtotal: number;
+  shipping: number;
   currencySymbol: string;
 }
 
@@ -23,6 +26,7 @@ const PAYMENT_URL = "https://egreve.bog.ge/teklaqvelidze";
 
 const ThankYouPage = () => {
   const { pathFor } = useLocale();
+  const { t } = useTranslation();
   const location = useLocation();
   const { clearCart } = useShop();
 
@@ -90,11 +94,25 @@ const ThankYouPage = () => {
                     </li>
                   ))}
                 </ul>
-                <div className="border-t border-border pt-4 flex justify-between font-normal">
-                  <span className="text-[11px] uppercase tracking-widest">
-                    Total
-                  </span>
-                  <span>{formatPrice(state.total, state.currencySymbol)}</span>
+                <div className="border-t border-border pt-4 space-y-2">
+                  <div className="flex justify-between font-light text-sm">
+                    <span>{t("checkout.subtotal")}</span>
+                    <span>
+                      {formatPrice(state.subtotal, state.currencySymbol)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between font-light text-sm">
+                    <span>{t("checkout.shipping")}</span>
+                    <span>
+                      {formatPrice(state.shipping, state.currencySymbol)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between font-normal pt-2 border-t border-border/50">
+                    <span className="text-[11px] uppercase tracking-widest">
+                      {t("checkout.total")}
+                    </span>
+                    <span>{formatPrice(state.total, state.currencySymbol)}</span>
+                  </div>
                 </div>
               </div>
 

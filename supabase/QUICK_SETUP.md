@@ -31,10 +31,10 @@
    - Click **Save**
 
 4. **Deploy the Function:**
-   - Go to the **Code** tab
-   - Copy the code from `supabase/functions/send-order-notification/index.ts`
-   - Paste it into the editor
-   - Click **Deploy**
+   - **Go to the Code tab** — In **Supabase Dashboard** (Edge Functions → `send-order-notification`), click **Code** so the editor is visible.
+   - **Copy the code** — In **your computer** (Cursor/VS Code or file explorer), open `supabase/functions/send-order-notification/index.ts`, select all (Cmd/Ctrl+A), and copy.
+   - **Paste into the editor** — Back in **Supabase Dashboard** (same function, Code tab), replace the existing code with a paste.
+   - **Click Deploy** — In **Supabase Dashboard**, click **Deploy** (or **Save and deploy**) on that page so the function is updated.
 
 ## Option 2: Using Supabase CLI
 

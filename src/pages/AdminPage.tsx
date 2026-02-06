@@ -193,6 +193,7 @@ const AdminPage = () => {
     onSale: false,
     salePrice: 0,
     hasSizes: true,
+    deliveryDays: null as number | null,
   });
 
   const normalizeSizes = (sizes: any) => {
@@ -314,6 +315,7 @@ const AdminPage = () => {
           onSale: p.on_sale,
           salePrice: p.sale_price,
           hasSizes: p.has_sizes !== false,
+          deliveryDays: p.delivery_days != null ? Number(p.delivery_days) : null,
           sizes: normalizeSizes(p.sizes),
         })) as Product[]
       );
@@ -537,6 +539,7 @@ const AdminPage = () => {
       on_sale: productForm.onSale,
       sale_price: productForm.salePrice,
       has_sizes: productForm.hasSizes !== false,
+      delivery_days: productForm.deliveryDays != null && productForm.deliveryDays > 0 ? productForm.deliveryDays : null,
     };
 
     try {
@@ -571,6 +574,7 @@ const AdminPage = () => {
         onSale: false,
         salePrice: 0,
         hasSizes: true,
+        deliveryDays: null,
       });
     } catch (error: any) {
       toast.error(error.message);
@@ -1140,6 +1144,29 @@ const AdminPage = () => {
                           className="w-full bg-transparent border border-border p-3 text-sm focus:outline-none focus:border-foreground resize-none"
                         />
                       </div>
+                      <div>
+                        <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-1">
+                          Product Details
+                        </label>
+                        <textarea
+                          rows={4}
+                          placeholder="One detail per line (e.g. 100% Cotton)"
+                          value={(productForm.details ?? []).join("\n")}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              details: e.target.value
+                                .split("\n")
+                                .map((s) => s.trim())
+                                .filter(Boolean),
+                            })
+                          }
+                          className="w-full bg-transparent border border-border p-3 text-sm focus:outline-none focus:border-foreground resize-none"
+                        />
+                        <p className="text-[9px] text-muted-foreground mt-1">
+                          One bullet point per line. Shown on the product page.
+                        </p>
+                      </div>
                       <div className="flex gap-6 pt-4">
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -1278,6 +1305,31 @@ const AdminPage = () => {
                           </div>
                         </div>
                       )}
+
+                      <div className="pt-4">
+                        <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-1">
+                          Delivery (days)
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          step="1"
+                          required
+                          placeholder="e.g. 3"
+                          value={productForm.deliveryDays ?? ""}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            setProductForm({
+                              ...productForm,
+                              deliveryDays: v === "" ? null : Math.max(1, parseInt(v, 10) || 1),
+                            });
+                          }}
+                          className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-foreground"
+                        />
+                        <p className="text-[9px] text-muted-foreground mt-1">
+                          Shown on product & checkout
+                        </p>
+                      </div>
 
                       <div className="pt-8">
                         <button

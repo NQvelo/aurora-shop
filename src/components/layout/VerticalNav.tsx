@@ -45,7 +45,7 @@ const VerticalNav = () => {
         {items.map((item) => {
           const path = getPath(item.path);
           const isActive = location.pathname === path;
-          const Icon = "icon" in item ? item.icon : null;
+          const Icon = "icon" in item ? (item.icon as React.ElementType) : null;
           return (
             <li key={item.path}>
               <Link
@@ -63,6 +63,27 @@ const VerticalNav = () => {
           );
         })}
       </ul>
+
+      {/* Language Switcher */}
+      <div className="absolute bottom-8 left-6 flex gap-3 text-xs tracking-wider font-light text-muted-foreground">
+        <button
+          onClick={() => window.location.href = location.pathname.replace(/^\/(en|ka)/, '/en')}
+          className={`hover:text-foreground transition-colors ${
+            location.pathname.startsWith("/en") ? "text-foreground font-normal" : ""
+          }`}
+        >
+          EN
+        </button>
+        <span>/</span>
+        <button
+          onClick={() => window.location.href = location.pathname.replace(/^\/(en|ka)/, '/ka')}
+          className={`hover:text-foreground transition-colors ${
+            location.pathname.startsWith("/ka") ? "text-foreground font-normal" : ""
+          }`}
+        >
+          GEO
+        </button>
+      </div>
     </nav>
   );
 };
