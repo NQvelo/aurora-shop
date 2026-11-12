@@ -3,10 +3,11 @@ import { Instagram, Facebook, Youtube } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocale } from "@/hooks/useLocale";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Footer = () => {
-  const { t, i18n } = useTranslation();
-  const { pathFor, switchLanguage } = useLocale();
+  const { t } = useTranslation();
+  const { pathFor } = useLocale();
   const [email, setEmail] = useState("");
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
@@ -141,16 +142,7 @@ const Footer = () => {
         {/* Bottom section */}
         <div className="pt-8 border-t border-background/20 flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Language */}
-          <div className="flex items-center gap-6 font-body text-xs uppercase tracking-[0.2em] text-background/70">
-            <select
-              value={i18n.language}
-              onChange={(e) => switchLanguage(e.target.value)}
-              className="bg-transparent font-body text-xs uppercase tracking-[0.2em] text-background/70 focus:outline-none cursor-pointer"
-            >
-              <option value="en">EN</option>
-              <option value="ka">KA</option>
-            </select>
-          </div>
+          <LanguageSwitcher className="text-background/70" />
 
           {/* Social icons */}
           <div className="flex items-center gap-6">

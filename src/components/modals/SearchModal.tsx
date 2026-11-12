@@ -1,11 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { X, Search, Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useShop } from "@/context/ShopContext";
 import { useProducts } from "@/hooks/useProducts";
 import { products as staticProducts } from "@/data/products";
 import { Product } from "@/types/product";
-import { useLocale } from "@/hooks/useLocale";
+import ProgressiveGrid from "@/components/product/ProgressiveGrid";
 
 const DEBOUNCE_MS = 200;
 const SEARCH_FIELDS = [
@@ -30,7 +29,7 @@ function matchesQuery(product: Product, q: string): boolean {
 }
 
 const SearchModal = () => {
-  const { isSearchOpen, setIsSearchOpen, currency } = useShop();
+  const { isSearchOpen, setIsSearchOpen } = useShop();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
 
@@ -72,12 +71,6 @@ const SearchModal = () => {
   }, [products]);
 
   if (!isSearchOpen) return null;
-
-  const formatPrice = (price: number) => {
-    return `${currency.symbol}${price.toLocaleString()}`;
-  };
-
-  const imageUrl = (product: Product) => product.images?.[0] ?? "";
 
   return (
     <div className="fixed inset-0 bg-background z-50 animate-fade-in overflow-y-auto">
@@ -125,40 +118,11 @@ const SearchModal = () => {
                 </p>
 
                 {query === debouncedQuery && results.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                    {results.map((product) => (
-                      <Link
-                        key={product.id}
-                        to={pathFor(`/product/${product.id}`)}
-                        onClick={() => setIsSearchOpen(false)}
-                        className="group"
-                      >
-                        <div className="aspect-[3/4] bg-muted mb-3 overflow-hidden">
-                          {imageUrl(product) ? (
-                            <img
-                              src={imageUrl(product)}
-                              alt={product.name}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-                              No image
-                            </div>
-                          )}
-                        </div>
-                        <h3 className="text-sm font-normal mb-1 group-hover:underline">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {formatPrice(
-                            product.onSale && product.salePrice != null
-                              ? product.salePrice
-                              : product.price
-                          )}
-                        </p>
-                      </Link>
-                    ))}
-                  </div>
+                  <ProgressiveGrid
+                    products={results}
+                    onNavigate={() => setIsSearchOpen(false)}
+                    className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-3"
+                  />
                 ) : query === debouncedQuery && results.length === 0 ? (
                   <p className="text-sm font-light text-muted-foreground text-center py-12">
                     No products found matching &quot;{debouncedQuery}&quot;

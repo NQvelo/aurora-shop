@@ -1,14 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
-import { Search, Package, ShoppingBag, Home } from "lucide-react";
+import { Package, ShoppingBag, Home } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useShop } from "@/context/ShopContext";
 import { useLocale } from "@/hooks/useLocale";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const VerticalNav = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const { pathFor } = useLocale();
-  const { setIsSearchOpen } = useShop();
   const isAdmin = location.pathname.startsWith("/admin");
 
   const navItems = [
@@ -31,16 +30,6 @@ const VerticalNav = () => {
 
   return (
     <nav className="vertical-nav px-6">
-      {!isAdmin && (
-        <button
-          onClick={() => setIsSearchOpen(true)}
-          className="mb-8 p-2 transition-colors duration-200 self-start flex items-center justify-center"
-          aria-label="Search"
-        >
-          <Search className="w-5 h-5" strokeWidth={1.5} />
-        </button>
-      )}
-
       <ul className="space-y-1">
         {items.map((item) => {
           const path = getPath(item.path);
@@ -64,25 +53,8 @@ const VerticalNav = () => {
         })}
       </ul>
 
-      {/* Language Switcher */}
-      <div className="absolute bottom-8 left-6 flex gap-3 text-xs tracking-wider font-light text-muted-foreground">
-        <button
-          onClick={() => window.location.href = location.pathname.replace(/^\/(en|ka)/, '/en')}
-          className={`hover:text-foreground transition-colors ${
-            location.pathname.startsWith("/en") ? "text-foreground font-normal" : ""
-          }`}
-        >
-          EN
-        </button>
-        <span>/</span>
-        <button
-          onClick={() => window.location.href = location.pathname.replace(/^\/(en|ka)/, '/ka')}
-          className={`hover:text-foreground transition-colors ${
-            location.pathname.startsWith("/ka") ? "text-foreground font-normal" : ""
-          }`}
-        >
-          GEO
-        </button>
+      <div className="absolute bottom-8 left-6">
+        <LanguageSwitcher kaLabel="GEO" />
       </div>
     </nav>
   );

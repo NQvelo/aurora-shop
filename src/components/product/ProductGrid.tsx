@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Product, SortOption } from "@/types/product";
-import ProductCard from "./ProductCard";
+import ProgressiveGrid from "./ProgressiveGrid";
 
 interface ProductGridProps {
   products: Product[];
@@ -15,7 +15,9 @@ const ProductGrid = ({
 }: ProductGridProps) => {
   const [sortBy, setSortBy] = useState<SortOption>("newest");
 
-  const sortedProducts = [...products].sort((a, b) => {
+  const sortedProducts = useMemo(
+    () =>
+      [...products].sort((a, b) => {
     switch (sortBy) {
       case "price-asc":
         return (
@@ -33,7 +35,9 @@ const ProductGrid = ({
       default:
         return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
     }
-  });
+      }),
+    [products, sortBy],
+  );
 
   return (
     <div>
@@ -73,11 +77,7 @@ const ProductGrid = ({
       </div>
 
       {/* Grid */}
-      <div className="product-grid">
-        {sortedProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      <ProgressiveGrid products={sortedProducts} />
 
       {sortedProducts.length === 0 && (
         <div className="text-center py-24 px-6">

@@ -1,9 +1,11 @@
-@import "@fontsource/cormorant-garamond/400.css";
-@import "@fontsource/cormorant-garamond/500.css";
-@import "@fontsource/cormorant-garamond/600.css";
-@import "@fontsource/inter/300.css";
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
+@import "@fontsource/schibsted-grotesk/400.css";
+@import "@fontsource/schibsted-grotesk/500.css";
+@import "@fontsource/schibsted-grotesk/600.css";
+@import "@fontsource/schibsted-grotesk/700.css";
+@import "@fontsource/noto-sans-georgian/300.css";
+@import "@fontsource/noto-sans-georgian/400.css";
+@import "@fontsource/noto-sans-georgian/500.css";
+@import "@fontsource/noto-sans-georgian/600.css";
 
 @font-face {
   font-family: "GA Zedginidze";
@@ -22,7 +24,7 @@
 @layer base {
   :root {
     /* Core palette - crisp white, deep black, warm neutrals */
-    --background: 338 77% 95%;
+    --background: 338 40% 98%;
     --foreground: 0 0% 8%;
 
     --card: 0 0% 100%;
@@ -63,9 +65,10 @@
     --luxury-border: 0 0% 88%;
 
     /* Typography */
-    --font-display: "Cormorant Garamond", serif;
-    --font-body: "Inter", sans-serif;
-    --font-collections: "GA Zedginidze", "Cormorant Garamond", serif;
+    --font-display: "Schibsted Grotesk", "Noto Sans Georgian", sans-serif;
+    --font-body: "Schibsted Grotesk", "Noto Sans Georgian", sans-serif;
+    --font-collections:
+      "GA Zedginidze", "Schibsted Grotesk", "Noto Sans Georgian", sans-serif;
 
     /* Spacing */
     --nav-width: 200px;
@@ -119,8 +122,8 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
-    font-weight: 300;
-    letter-spacing: 0.01em;
+    font-weight: 500;
+    letter-spacing: -0.011em;
   }
 
   h1,
@@ -130,7 +133,7 @@
   h5,
   h6 {
     font-family: var(--font-display);
-    font-weight: 400;
+    font-weight: 500;
   }
 }
 
@@ -274,6 +277,79 @@
   /* Header */
   .main-header {
     @apply h-[var(--header-height)] flex items-center justify-between px-6 lg:px-12 border-b border-border bg-background;
+    transition:
+      background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .main-header[data-overlay="true"] {
+    background-color: transparent;
+    border-bottom-color: transparent;
+  }
+
+  .header-logo-light {
+    filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.28));
+  }
+
+  @media (max-width: 1023px) {
+    :root {
+      --header-height: 52px;
+    }
+
+    .main-header {
+      transition:
+        background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        top 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .main-header[data-hidden="true"] {
+      transform: translateY(-100%);
+      pointer-events: none;
+    }
+
+    .main-header[data-overlay="true"] {
+      top: calc(env(safe-area-inset-top) + 14px);
+    }
+  }
+
+  .intro-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(var(--background));
+  }
+
+  .intro-splash-logo {
+    width: min(40vw, 160px);
+    height: auto;
+    animation: intro-logo-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .intro-splash-out {
+    animation: intro-fade-out 0.6s ease forwards;
+    pointer-events: none;
+  }
+
+  @keyframes intro-logo-in {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes intro-fade-out {
+    to {
+      opacity: 0;
+    }
   }
 
   /* Footer */
@@ -308,6 +384,56 @@
   /* Mobile menu */
   .mobile-nav {
     @apply fixed inset-0 bg-background z-50 flex flex-col p-8 pt-20;
+  }
+
+  .mobile-tab-bar-dock {
+    transform: translateZ(0);
+  }
+
+  .mobile-tab-bar.lg-tab-bar[data-icons] {
+    --lg-tab-width: min(80px, calc((100vw - 40px) / var(--lg-tabs)));
+    --lg-glass: rgb(255 255 255 / 71%);
+    --lg-rim-shine: 0.7;
+    --lg-glass-bend: 0.8;
+    --lg-glass-dispersion: 0.7;
+    --lg-blur: 2px;
+    --lg-tab-idle: #000000;
+    box-shadow:
+      0 4px 14px rgba(0, 0, 0, 0.1),
+      0 14px 36px rgba(0, 0, 0, 0.16);
+  }
+
+  .mobile-tab-bar.lg-tab-bar[data-icons] .lg-tab,
+  .mobile-tab-bar.lg-tab-bar[data-icons] .lg-tab:hover {
+    color: var(--lg-tab-idle);
+  }
+
+  .mobile-tab-bar.lg-tab-bar[data-icons] :is(.lg-tab, .lg-tab-copy) {
+    gap: 3px;
+  }
+
+  .mobile-tab-bar :is(.lg-tab, .lg-tab-copy, .lg-tab-label) {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  .mobile-tab-bar .lg-tab-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .mobile-tab-bar .lg-tab-icon svg [stroke] {
+    stroke-width: 2;
+  }
+
+  .mobile-tab-bar .lg-tab-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
   }
 
   /* Collections page specific font */

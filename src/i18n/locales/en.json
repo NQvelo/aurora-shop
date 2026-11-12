@@ -45,7 +45,9 @@
     "categories": "Categories",
     "mostLoved": "Most Loved",
     "bestsellers": "Bestsellers",
-    "viewAll": "View All Bestsellers"
+    "viewAll": "View All Bestsellers",
+    "newCollection": "New Collection",
+    "viewAllNew": "View All New In"
   },
   "categories": {
     "dresses": "Dresses",
@@ -183,5 +185,21 @@
       "p1": "11.1. This agreement is governed by the legislation of Georgia.",
       "p2": "11.2. All disputes are considered by the courts of Georgia."
     }
+  },
+  "tabs": {
+    "label": "Main navigation",
+    "home": "Home",
+    "categories": "Categories",
+    "cart": "Cart",
+    "profile": "Profile"
+  },
+  "cart": {
+    "title": "Shopping Bag",
+    "empty": "Your shopping bag is empty",
+    "size": "Size",
+    "checkout": "Proceed to Checkout",
+    "shippingNote": "Shipping and taxes calculated at checkout",
+    "continue": "Continue Shopping",
+    "remove": "Remove"
   }
 }

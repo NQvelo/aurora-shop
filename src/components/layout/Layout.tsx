@@ -1,9 +1,11 @@
 import { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useShop } from '@/context/ShopContext';
 import Header from './Header';
 import VerticalNav from './VerticalNav';
 import Footer from './Footer';
 import MobileNav from './MobileNav';
+import BottomNav from './BottomNav';
 import CartDrawer from '@/components/drawers/CartDrawer';
 import WishlistDrawer from '@/components/drawers/WishlistDrawer';
 import SearchModal from '@/components/modals/SearchModal';
@@ -15,6 +17,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const { isMobileMenuOpen } = useShop();
+  const isAdmin = useLocation().pathname.startsWith("/admin");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -26,9 +29,11 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
       
-      <div className="lg:ml-[var(--nav-width)]">
+      <div className={`lg:ml-[var(--nav-width)] ${isAdmin ? "" : "max-lg:pb-32"}`}>
         <Footer />
       </div>
+
+      <BottomNav />
 
       {/* Drawers and Modals */}
       <CartDrawer />

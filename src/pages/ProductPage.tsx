@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Heart, ChevronDown, ChevronUp } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import ProductCard from "@/components/product/ProductCard";
+import ProgressiveGrid from "@/components/product/ProgressiveGrid";
 import { useProduct, useProducts } from "@/hooks/useProducts";
 import { useShop } from "@/context/ShopContext";
 import { useLocale } from "@/hooks/useLocale";
@@ -366,15 +366,11 @@ const ProductPage = () => {
 
         {/* Recommended Products */}
         {recommended.length > 0 && (
-          <section className="py-16 md:py-24 px-6 lg:px-12 border-t border-border">
-            <h2 className="font-display text-2xl md:text-3xl tracking-wide text-center mb-12">
+          <section className="border-t border-border py-16 md:py-24 lg:px-12">
+            <h2 className="mb-12 px-6 text-center font-display text-2xl tracking-wide md:text-3xl lg:px-0">
               You May Also Like
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {recommended.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
+            <ProgressiveGrid products={recommended} />
           </section>
         )}
       </div>

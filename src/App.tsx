@@ -13,9 +13,11 @@ import TermsPage from "./pages/TermsPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import CheckoutPage from "./pages/CheckoutPage";
+import CartPage from "./pages/CartPage";
 import ThankYouPage from "./pages/ThankYouPage";
 import AdminPage from "./pages/AdminPage";
 import ScrollToTop from "./components/ScrollToTop";
+import IntroSplash from "./components/IntroSplash";
 import CollectionsPage from "./pages/CollectionsPage";
 import LoginPage from "./pages/LoginPage";
 import LocaleLayout from "./components/LocaleLayout";
@@ -37,6 +39,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <ScrollToTop />
+            <IntroSplash />
             <Routes>
               <Route path="/" element={<RedirectToLocale />} />
               <Route path="/admin" element={<AdminPage />} />
@@ -90,6 +93,7 @@ const App = () => (
                 <Route path="login" element={<LoginPage />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="product/:id" element={<ProductPage />} />
+                <Route path="cart" element={<CartPage />} />
                 <Route path="checkout" element={<CheckoutPage />} />
                 <Route path="thank-you" element={<ThankYouPage />} />
                 <Route path="*" element={<NotFound />} />

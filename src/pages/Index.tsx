@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import HeroSection from "@/components/home/HeroSection";
 import BestsellersSection from "@/components/home/BestsellersSection";
+import NewCollectionSection from "@/components/home/NewCollectionSection";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 
@@ -31,6 +32,7 @@ const Index = () => {
     <Layout>
       <HeroSection />
       <BestsellersSection />
+      <NewCollectionSection />
     </Layout>
   );
 };

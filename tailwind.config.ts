@@ -14,9 +14,14 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Cormorant Garamond", "serif"],
-        body: ["Inter", "sans-serif"],
-        collections: ["GA Zedginidze", "Cormorant Garamond", "serif"],
+        display: ["Schibsted Grotesk", "Noto Sans Georgian", "sans-serif"],
+        body: ["Schibsted Grotesk", "Noto Sans Georgian", "sans-serif"],
+        collections: ["GA Zedginidze", "Schibsted Grotesk", "Noto Sans Georgian", "sans-serif"],
+      },
+      fontWeight: {
+        light: "400",
+        normal: "500",
+        medium: "600",
       },
       colors: {
         border: "hsl(var(--border))",

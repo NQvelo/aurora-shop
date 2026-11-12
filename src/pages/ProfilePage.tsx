@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { useShop } from "@/context/ShopContext";
-import ProductCard from "@/components/product/ProductCard";
+import ProgressiveGrid from "@/components/product/ProgressiveGrid";
 import { supabase } from "@/lib/supabase";
 import { useLocale } from "@/hooks/useLocale";
 import { useProducts } from "@/hooks/useProducts";
@@ -387,14 +387,10 @@ const ProfilePage = () => {
                   </div>
 
                   {wishlist.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                      {wishlist.map((item) => (
-                        <ProductCard
-                          key={item.product.id}
-                          product={item.product}
-                        />
-                      ))}
-                    </div>
+                    <ProgressiveGrid
+                      products={wishlist.map((item) => item.product)}
+                      className="grid grid-cols-2 gap-x-2 gap-y-8 md:grid-cols-3"
+                    />
                   ) : (
                     <div className="bg-muted/20 border border-dashed border-border py-24 flex flex-col items-center justify-center text-center px-4">
                       <p className="text-muted-foreground text-sm font-light mb-6">
