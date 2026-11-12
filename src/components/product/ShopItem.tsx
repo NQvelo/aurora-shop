@@ -44,7 +44,7 @@ const ShopItem = ({ product, onNavigate }: ShopItemProps) => {
           onClick={onNavigate}
           className="block"
         >
-          <div className="aspect-[3/4] overflow-hidden bg-muted">
+          <div className="aspect-[3/4] overflow-hidden rounded-[5px] bg-muted">
             <img
               src={product.images[0]}
               alt={product.name}

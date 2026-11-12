@@ -142,6 +142,7 @@
   .btn-luxury {
     @apply inline-flex items-center justify-center px-8 py-3 text-xs font-normal uppercase tracking-[0.2em] transition-all duration-300;
     font-family: var(--font-body);
+    border-radius: 5px;
   }
 
   .btn-luxury-primary {
@@ -184,6 +185,14 @@
 
   .form-input {
     font-family: var(--font-body);
+    border-radius: 5px;
+  }
+
+  button,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+  textarea,
+  select {
+    border-radius: 5px;
   }
 
   /* Navigation link */
